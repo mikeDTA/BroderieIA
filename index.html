@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Atelier Broderie – photo vers DST</title>
-<!-- Atelier Broderie © [Michaël PONCET] – CC BY-NC 4.0 (voir LICENSE). Utilisation non commerciale uniquement. -->
+<!-- Atelier Broderie © [Votre nom] – CC BY-NC 4.0 (voir LICENSE). Utilisation non commerciale uniquement. -->
 <style>
 :root{--bg:#17213a;--pn:#212e4f;--ink:#e8ebf3;--mut:#9aa6c4;--ac:#f2b134;--ln:#34456f}
 @media(prefers-color-scheme:light){:root{--bg:#eef1f7;--pn:#fff;--ink:#17213a;--mut:#56628a;--ln:#c8d0e4}}
@@ -25,10 +25,10 @@ pre{white-space:pre-wrap;background:var(--pn);padding:10px;border-radius:5px;bor
 <label>Stabilisateur<select id="stab"></select></label>
 <h2>Style</h2>
 <label><input type="checkbox" id="portrait"> Portrait (effet dessin à la main)</label>
-<label><input type="checkbox" id="bw"> Noir et blanc</label>
+<label>Conversion<select id="mode"><option value="couleur">Couleur</option><option value="gris">Niveaux de gris</option><option value="nb">Noir et blanc</option></select></label><label>Type de point<select id="ptype"><option value="tatami">Remplissage tatami</option><option value="satin">Satin (approx.)</option><option value="run">Point droit (contours)</option><option value="mix">Tatami + contour</option></select></label>
 <label><input type="checkbox" id="skipBg" checked> Ignorer le fond</label>
 <label><input type="checkbox" id="underlay" checked> Sous-couche</label>
-<h2>Exporter</h2>
+<h2>Palette de fils</h2><label>Importer Madeira (.gpl ou CSV)<input type="file" id="pal" accept=".gpl,.csv,.txt"></label><small id="palname" style="color:var(--mut)">Palette générique</small><h2>Exporter</h2>
 <div class="row"><button class="go" id="xdst">DST</button><button id="xedr">EDR (couleurs)</button></div>
 <small style="color:var(--mut)">Format 100/10O Toyota : pas encore disponible, ouvrez le DST dans Embird pour le convertir.</small>
 <h2>Affichage</h2>
@@ -46,62 +46,78 @@ pre{white-space:pre-wrap;background:var(--pn);padding:10px;border-radius:5px;bor
 const $=id=>document.getElementById(id);
 const FAB={coton:{n:'Coton / popeline',sp:.40,pc:.2,nd:'75/11 universelle',st:'decoupable'},jersey:{n:'Jersey / maille (extensible)',sp:.45,pc:.3,nd:'75/11 bille (ballpoint)',st:'decoupable'},polo:{n:'Polo piqué',sp:.42,pc:.3,nd:'75/11 bille',st:'decoupable'},polaire:{n:'Polaire',sp:.45,pc:.25,nd:'90/14 universelle',st:'hydro'},denim:{n:'Jean / toile épaisse',sp:.38,pc:.15,nd:'90/14 jeans',st:'dechirable'},feutrine:{n:'Feutrine',sp:.40,pc:.1,nd:'80/12 universelle',st:'dechirable'},soie:{n:'Satin / soie (fin)',sp:.50,pc:.1,nd:'65/9 pointe fine',st:'decoupable'},eponge:{n:'Éponge / serviette',sp:.45,pc:.3,nd:'90/14 universelle',st:'hydro'},simili:{n:'Cuir / simili',sp:.50,pc:.1,nd:'90/14 cuir',st:'dechirable'}};
 const STB={decoupable:{n:'Découpable (cutaway)',f:1,t:'Stabilisateur découpable 40–60 g, collé en spray ou thermocollé au dos.'},dechirable:{n:'Déchirable (tearaway)',f:1.05,t:'Stabilisateur déchirable, tissu stable uniquement.'},thermo:{n:'Thermocollant',f:1,t:'Thermocollant au dos, repassé avant de tendre le cadre.'},hydro:{n:'Hydrosoluble (topping)',f:1.1,t:'Film hydrosoluble sur le dessus pour que les points ne s’enfoncent pas dans le tissu.'}};
-const THR=[['Blanc','#f5f5f0'],['Noir','#141414'],['Rouge','#c8232c'],['Bordeaux','#7a1730'],['Rose','#e88ab0'],['Orange','#ee7a1c'],['Jaune','#f3cf2a'],['Vert clair','#7bc043'],['Vert foncé','#1f6b3a'],['Turquoise','#27a9b8'],['Bleu','#2a5db0'],['Marine','#1b2a55'],['Violet','#6b3fa0'],['Marron','#6b4226'],['Beige','#d2b48c'],['Gris','#8a8d93']];
-const P={width:100,colors:5,spacing:.4,stitchLen:3.5,angle:45,stagger:3,pullComp:.2,underlaySpacing:2.5,minStitch:.3,hatch:1};
-const SPEC=[['width','Largeur (mm)',20,300,1,1],['colors','Nombre de couleurs',2,12,1,1],['spacing','Espacement des rangs (mm)',.2,1.2,.05,1],['stitchLen','Longueur de point (mm)',1,7,.1,1],['angle','Angle du remplissage (°)',0,180,1,1],['pullComp','Compensation de tirage (mm)',0,1,.05,1],['stagger','Décalage des rangs (nb)',1,6,1,0],['underlaySpacing','Espacement sous-couche (mm)',1,5,.1,0],['minStitch','Point minimum (mm)',.1,1,.05,0],['hatch','Espacement des hachures portrait (mm)',.5,3,.1,0]];
+const THR=[['Blanc','#f5f5f0'],['Noir','#141414'],['Rouge','#c8232c'],['Bordeaux','#7a1730'],['Rose','#e88ab0'],['Orange','#ee7a1c'],['Jaune','#f3cf2a'],['Vert clair','#7bc043'],['Vert foncé','#1f6b3a'],['Turquoise','#27a9b8'],['Bleu','#2a5db0'],['Marine','#1b2a55'],['Violet','#6b3fa0'],['Marron','#6b4226'],['Beige','#d2b48c'],['Gris','#8a8d93'],['Gris clair','#c4c6cb'],['Gris foncé','#4d5058']];let PAL=THR;
+const P={width:100,colors:5,speed:650,smooth:1,minRegion:30,noTrim:3,spacing:.4,stitchLen:3.5,angle:45,stagger:3,pullComp:.2,underlaySpacing:2.5,underlayLen:3,underlayAngle:90,satinSpacing:.4,satinMax:6,runLen:2.5,minStitch:.3,hatch:1};
+const SPEC=[['width','Largeur (mm)',20,300,1,1,'Général'],['colors','Nombre de couleurs',2,12,1,1,'Général'],['speed','Vitesse machine (points/min)',200,1000,10,1,'Général'],['minStitch','Point minimum (mm)',.1,1,.05,0,'Général'],
+['smooth','Lissage des zones (passes)',0,4,1,1,'Simplification (moins de coupes)'],['minRegion','Zone minimale fusionnée (cellules)',0,300,5,1,'Simplification (moins de coupes)'],['noTrim','Distance sans coupe de fil (mm)',0,10,.5,1,'Simplification (moins de coupes)'],
+['spacing','Espacement des rangs (mm)',.2,1.2,.05,1,'Point tatami'],['stitchLen','Longueur de point (mm)',1,7,.1,1,'Point tatami'],['angle','Angle (°)',0,180,1,1,'Point tatami'],['stagger','Décalage des rangs (nb)',1,6,1,0,'Point tatami'],['pullComp','Compensation de tirage (mm)',0,1,.05,1,'Point tatami'],
+['underlaySpacing','Espacement sous-couche (mm)',1,5,.1,0,'Sous-couche'],['underlayLen','Longueur point sous-couche (mm)',1.5,5,.1,0,'Sous-couche'],['underlayAngle','Angle sous-couche relatif (°)',0,180,1,0,'Sous-couche'],
+['satinSpacing','Espacement satin (mm)',.2,.8,.05,0,'Point satin'],['satinMax','Longueur max satin (mm)',2,12,.5,0,'Point satin'],['runLen','Longueur point droit (mm)',1,5,.1,0,'Point droit (contours)'],['hatch','Espacement hachures portrait (mm)',.5,3,.1,0,'Portrait']];
 let img=null,blocks=[],dims={W:100,H:100},timer;
 for(const[k,v]of Object.entries(FAB))$('fab').add(new Option(v.n,k));
 for(const[k,v]of Object.entries(STB))$('stab').add(new Option(v.n,k));
 function ctl(s){return`<label>${s[1]}<div class="row"><input type="range" data-k="${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${P[s[0]]}"><input type="number" data-k="${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${P[s[0]]}"></div></label>`}
-$('qc').innerHTML=SPEC.filter(s=>s[5]).map(ctl).join('');$('advc').innerHTML=SPEC.map(ctl).join('');
+$('qc').innerHTML=SPEC.filter(s=>s[5]).map(ctl).join('');let _g='';$('advc').innerHTML=SPEC.map(s=>(s[6]!==_g?`<h3>${_g=s[6]}</h3>`:'')+ctl(s)).join('');
 document.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;P[k]=+e.target.value;document.querySelectorAll(`[data-k=${k}]`).forEach(i=>i.value=P[k]);later()});
 function setP(k,v){P[k]=v;document.querySelectorAll(`[data-k=${k}]`).forEach(i=>i.value=v)}
 function preset(){const F=FAB[$('fab').value],S=STB[$('stab').value];setP('spacing',+(F.sp*S.f).toFixed(2));setP('pullComp',F.pc);later()}
 $('fab').onchange=()=>{$('stab').value=FAB[$('fab').value].st;preset()};$('stab').onchange=preset;
-['portrait','bw','skipBg','underlay'].forEach(i=>$(i).onchange=later);$('fab').dispatchEvent(new Event('change'));
+['portrait','mode','ptype','skipBg','underlay'].forEach(i=>$(i).onchange=later);$('fab').dispatchEvent(new Event('change'));
 $('bq').onclick=()=>$('quick').style.display='block';$('qx').onclick=()=>$('quick').style.display='none';
 $('ba').onclick=()=>$('adv').style.display=$('adv').style.display==='block'?'none':'block';
 $('f').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{img=i;gen()};i.onerror=()=>$('info').textContent='Image illisible : essayez un autre fichier.';i.src=URL.createObjectURL(f)};
 function later(){clearTimeout(timer);timer=setTimeout(()=>img&&gen(),250)}
-function kmeans(px,n){const cs=[],st=Math.max(1,px.length/n|0);for(let i=0;i<n;i++)cs.push(px[Math.min(px.length-1,i*st)].slice(0,3));const lab=new Int16Array(px.length);
+function kmeans(px,n){const cs=[px[0].slice(0,3)],sb=px.filter((_,i)=>i%5===0);while(cs.length<n){let bp=sb[0],bd=-1;for(const p of sb){let m=1e9;for(const c of cs){const d=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(d<m)m=d}if(m>bd){bd=m;bp=p}}cs.push(bp.slice(0,3))}const lab=new Int16Array(px.length);
 for(let it=0;it<6;it++){const sm=cs.map(()=>[0,0,0,0]);px.forEach((p,i)=>{let b=0,bd=1e9;cs.forEach((c,k)=>{const d=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(d<bd){bd=d;b=k}});lab[i]=b;const s=sm[b];s[0]+=p[0];s[1]+=p[1];s[2]+=p[2];s[3]++});sm.forEach((s,k)=>{if(s[3])cs[k]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]]})}return{cs,lab}}
-function nearest(c){let b=THR[0],bd=1e9;for(const t of THR){const h=t[1],r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),bl=parseInt(h.slice(5),16),d=(r-c[0])**2+(g-c[1])**2+(bl-c[2])**2;if(d<bd){bd=d;b=t}}return b}
+function nearest(c,go){let L=PAL;if(go){const g=PAL.filter(t=>{const h=t[1],r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5),16);return Math.max(r,g,b)-Math.min(r,g,b)<35});if(g.length)L=g}
+let b=L[0],bd=1e9;for(const t of L){const h=t[1],r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),bl=parseInt(h.slice(5),16),d=(r-c[0])**2+(g-c[1])**2+(bl-c[2])**2;if(d<bd){bd=d;b=t}}return b}
+$('pal').onchange=async e=>{const f=e.target.files[0];if(!f)return;const L=[];for(const l of(await f.text()).split(/\r?\n/)){let m=l.match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s*(.*)$/);if(m)L.push([m[4]||'Fil','#'+[1,2,3].map(i=>(+m[i]).toString(16).padStart(2,'0')).join('')]);else{m=l.match(/^([^;,\t]+)[;,\t]([^;,\t]*)[;,\t]\s*#?([0-9a-fA-F]{6})\s*$/);if(m)L.push([(m[1]+' '+m[2]).trim(),'#'+m[3]])}}
+if(L.length){PAL=L;$('palname').textContent=f.name+' : '+L.length+' fils';later()}else alert('Aucune couleur reconnue. Formats acceptés : .gpl ou lignes « code;nom;#hex ».')};
+function smooth(lab,gw,gh,passes,minR,nc){for(let p=0;p<passes;p++){const o=lab.slice();for(let y=1;y<gh-1;y++)for(let x=1;x<gw-1;x++){const c=new Array(nc).fill(0);for(let dy=-1;dy<2;dy++)for(let dx=-1;dx<2;dx++)c[o[(y+dy)*gw+x+dx]]++;let b=o[y*gw+x];for(let k=0;k<nc;k++)if(c[k]>c[b])b=k;lab[y*gw+x]=b}}
+if(minR>0){const seen=new Uint8Array(lab.length);for(let s=0;s<lab.length;s++){if(seen[s])continue;const L=lab[s],q=[s],comp=[s],nb=new Array(nc).fill(0);seen[s]=1;
+while(q.length){const i=q.pop(),x=i%gw,y=i/gw|0;for(const[j,ok]of[[i-1,x>0],[i+1,x<gw-1],[i-gw,y>0],[i+gw,y<gh-1]]){if(!ok)continue;if(lab[j]===L){if(!seen[j]){seen[j]=1;q.push(j);comp.push(j)}}else nb[lab[j]]++}}
+if(comp.length<minR){let b=-1;for(let k=0;k<nc;k++)if(nb[k]&&(b<0||nb[k]>nb[b]))b=k;if(b>=0)comp.forEach(i=>lab[i]=b)}}}}
+function outline(lab,gw,gh,k,cell){const b=[];for(let y=0;y<gh;y++)for(let x=0;x<gw;x++){const i=y*gw+x;if(lab[i]!==k)continue;if(x===0||y===0||x===gw-1||y===gh-1||lab[i-1]!==k||lab[i+1]!==k||lab[i-gw]!==k||lab[i+gw]!==k)b.push([(x+.5)*cell,(y+.5)*cell])}
+const pts=b.filter((_,i)=>i%2===0).slice(0,4000);if(!pts.length)return[];let cur=pts.pop(),lx=cur[0],ly=cur[1];const out=[{x:lx,y:ly,j:true}];
+while(pts.length){let bi=0,bd=1e9;for(let i=0;i<pts.length;i++){const dd=(pts[i][0]-cur[0])**2+(pts[i][1]-cur[1])**2;if(dd<bd){bd=dd;bi=i}}const n=pts.splice(bi,1)[0];
+if(Math.sqrt(bd)>cell*3){out.push({x:n[0],y:n[1],j:true});lx=n[0];ly=n[1]}else if(Math.hypot(n[0]-lx,n[1]-ly)>=P.runLen){out.push({x:n[0],y:n[1],j:false});lx=n[0];ly=n[1]}cur=n}return out}
 function fill(mask,ang,sp,len,stag,pc){const{W,H}=dims,a=ang*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),cx=W/2,cy=H/2,D=Math.hypot(W,H)/2,out=[];let row=0,dir=1,last=null;
 for(let t=-D;t<=D;t+=sp,row++){const runs=[];let s0=null;
 for(let s=-D;s<=D;s+=.25){const on=mask(cx+s*ca-t*sa,cy+s*sa+t*ca);if(on&&s0===null)s0=s;if(!on&&s0!==null){runs.push([s0,s-.25]);s0=null}}
 if(s0!==null)runs.push([s0,D]);if(dir<0)runs.reverse();let any=0;
 for(const r of runs){const a0=r[0]-pc,a1=r[1]+pc;if(a1-a0<P.minStitch)continue;any=1;const o=len*((row%stag)/stag),q=[a0];let s=a0+(o>.3?o:len);while(s<a1-.3){q.push(s);s+=len}q.push(a1);if(dir<0)q.reverse();
-q.forEach((v,i)=>{const x=cx+v*ca-t*sa,y=cy+v*sa+t*ca;const j=i===0&&(!last||Math.hypot(x-last[0],y-last[1])>2.5);out.push({x,y,j});last=[x,y]})}
+q.forEach((v,i)=>{const x=cx+v*ca-t*sa,y=cy+v*sa+t*ca;const j=i===0&&(!last||Math.hypot(x-last[0],y-last[1])>P.noTrim);out.push({x,y,j});last=[x,y]})}
 if(any)dir=-dir}return out}
 function gen(){const W=P.width,gw=Math.min(320,img.width),gh=Math.max(1,Math.round(gw*img.height/img.width)),H=W*gh/gw;dims={W,H};
 const c=document.createElement('canvas');c.width=gw;c.height=gh;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,gw,gh);x.drawImage(img,0,0,gw,gh);
-const d=x.getImageData(0,0,gw,gh).data,px=[];for(let i=0;i<d.length;i+=4)px.push([d[i],d[i+1],d[i+2]]);
-const{cs,lab}=kmeans(px,P.colors),cell=W/gw,cnt={};
+const d=x.getImageData(0,0,gw,gh).data,px=[],M=$('mode').value;
+for(let i=0;i<d.length;i+=4){const l=.299*d[i]+.587*d[i+1]+.114*d[i+2];px.push(M==='gris'?[l,l,l]:M==='nb'?(l>128?[255,255,255]:[20,20,20]):[d[i],d[i+1],d[i+2]])}
+const{cs,lab}=kmeans(px,M==='nb'?2:P.colors),cell=W/gw,nc=cs.length;smooth(lab,gw,gh,P.smooth,P.minRegion,nc);const cnt={};
 for(let i=0;i<gw;i++){[i,gw*(gh-1)+i].forEach(j=>cnt[lab[j]]=(cnt[lab[j]]||0)+1)}
 const bg=$('skipBg').checked?+Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]:-1;
 const at=(X,Y)=>{const gx=X/cell|0,gy=Y/cell|0;return gx<0||gy<0||gx>=gw||gy>=gh?-1:gy*gw+gx};
-const lum=i=>(.299*px[i][0]+.587*px[i][1]+.114*px[i][2])/255;
-blocks=[];const bw=$('bw').checked,spc=P.spacing,add=(color,pts)=>pts.length&&blocks.push({color,pts});
+const lum=i=>(.299*px[i][0]+.587*px[i][1]+.114*px[i][2])/255,gcol=k=>M==='nb'?(cs[k][0]>128?['Blanc','#f5f5f0']:['Noir','#141414']):nearest(cs[k],M==='gris');
+blocks=[];const spc=P.spacing,add=(c,pts)=>{pts.forEach((p,i)=>{if(i>0&&p.j&&Math.hypot(p.x-pts[i-1].x,p.y-pts[i-1].y)<=P.noTrim)p.j=false});pts.length&&blocks.push({color:c[1],name:c[0],pts})};
 if($('portrait').checked){
  const order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[a][0]+cs[a][1]+cs[a][2])-(cs[b][0]+cs[b][1]+cs[b][2]));
- const keep=order.slice(0,Math.max(1,Math.ceil(order.length/2)));
- keep.forEach((k,n)=>{const col=bw?'#141414':nearest(cs[k])[1],h=P.hatch*(1+n*.6);
-  add(col,[...fill((X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k},45,h,P.stitchLen,P.stagger,0),...(n===0?fill((X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k&&lum(i)<.25},-45,h*1.3,P.stitchLen,P.stagger,0):[])])});
+ order.slice(0,Math.max(1,Math.ceil(order.length/2))).forEach((k,n)=>{const h=P.hatch*(1+n*.6),m=(X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k};
+  add(gcol(k),[...fill(m,45,h,P.stitchLen,P.stagger,0),...(n===0?fill((X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k&&lum(i)<.25},-45,h*1.3,P.stitchLen,P.stagger,0):[])])});
 }else{
- const order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[b][0]+cs[b][1]+cs[b][2])-(cs[a][0]+cs[a][1]+cs[a][2]));
+ const T=$('ptype').value,order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[b][0]+cs[b][1]+cs[b][2])-(cs[a][0]+cs[a][1]+cs[a][2]));
  order.forEach(k=>{const m=(X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k};let pts=[];
-  if($('underlay').checked)pts=fill(m,P.angle+90,P.underlaySpacing,3,2,-.3);
-  pts=pts.concat(fill(m,P.angle,spc,P.stitchLen,P.stagger,P.pullComp));
-  add(bw?(lum(0)>.5?'#141414':'#141414'):nearest(cs[k])[1],pts)});
-}
+  if(T!=='run'){if($('underlay').checked&&T!=='satin')pts=fill(m,P.angle+P.underlayAngle,P.underlaySpacing,P.underlayLen,2,-.3);
+   pts=pts.concat(T==='satin'?fill(m,P.angle,P.satinSpacing,P.satinMax,1,P.pullComp):fill(m,P.angle,spc,P.stitchLen,P.stagger,P.pullComp))}
+  if(T==='run'||T==='mix')pts=pts.concat(outline(lab,gw,gh,k,cell));
+  add(gcol(k),pts)})}
 draw();info();threads();mount()}
 function draw(){const cv=$('cv'),{W,H}=dims,k=800/W;cv.width=800;cv.height=Math.round(H*k);const x=cv.getContext('2d');x.fillStyle=getComputedStyle(document.body).colorScheme==='dark'?'#d9d4c7':'#e4dfd2';x.fillStyle='#d9d4c7';x.fillRect(0,0,cv.width,cv.height);x.lineCap='round';
 const pass=(w,off,fn)=>blocks.forEach(b=>{x.lineWidth=w;x.strokeStyle=fn(b);x.beginPath();b.pts.forEach((p,i)=>{const X=p.x*k+off,Y=p.y*k+off;(i===0||p.j)?x.moveTo(X,Y):x.lineTo(X,Y)});x.stroke()});
 pass(2.6,1.2,()=>'rgba(0,0,0,.28)');pass(2,0,b=>b.color);pass(.7,-.4,()=>'rgba(255,255,255,.28)')}
-function info(){const n=blocks.reduce((s,b)=>s+b.pts.length,0);$('info').textContent=`${n} points · ${blocks.length} couleurs · ${dims.W.toFixed(0)} × ${dims.H.toFixed(0)} mm`}
-function threads(){$('thr').innerHTML='';blocks.forEach((b,i)=>{const d=document.createElement('div');d.className='thr';d.innerHTML=`<b style="background:${b.color}"></b>Aiguille ${i+1} <input type="color" value="${b.color}">`;d.querySelector('input').oninput=e=>{b.color=e.target.value;d.querySelector('b').style.background=b.color;draw()};$('thr').append(d)})}
+function info(){let n=0,t=0;blocks.forEach(b=>b.pts.forEach((p,i)=>{if(p.j){if(i>0)t++}else n++}));const m=n/P.speed+(blocks.length-1)*1+t*5/60,h=Math.floor(m/60),mm=Math.round(m%60);
+$('info').textContent=`${n} points · ${blocks.length} couleurs · ${t} coupes de fil · ${dims.W.toFixed(0)} × ${dims.H.toFixed(0)} mm · durée estimée ${h?h+' h ':''}${mm} min (à ${P.speed} points/min, 1 min par changement de couleur, 5 s par coupe)`}
+function threads(){$('thr').innerHTML='';blocks.forEach((b,i)=>{const d=document.createElement('div');d.className='thr';d.innerHTML=`<b style="background:${b.color}"></b>Aiguille ${i+1} · ${b.name} <input type="color" value="${b.color}">`;d.querySelector('input').oninput=e=>{b.color=e.target.value;b.name='personnalisée';d.querySelector('b').style.background=b.color;draw()};$('thr').append(d)})}
 function mount(){const F=FAB[$('fab').value],S=STB[$('stab').value],st=['jersey','polo','polaire','eponge'].includes($('fab').value);
-$('mnt').textContent=`Aiguille : ${F.nd}\nStabilisateur : ${S.t}\n\n1. Posez le stabilisateur au dos du tissu (le plus grand que le cadre).\n2. Tendez dans le cadre sans étirer : le tissu doit rester à plat, fil droit parallèle au bord.${st?'\n3. Tissu extensible : ne tirez surtout pas, préférez le découpable.':''}\n${$('stab').value==='hydro'?'3. Posez le film hydrosoluble sur le dessus, non tendu.\n':''}4. Centrez le motif sur le repère du cadre (point 0,0 au centre).\n5. Vitesse conseillée : 600–700 points/min pour les premiers essais.`}
+$('mnt').textContent=`Aiguille : ${F.nd}\nStabilisateur : ${S.t}\n\n- Posez le stabilisateur au dos du tissu (le plus grand que le cadre).\n- Tendez dans le cadre sans étirer : le tissu doit rester à plat, fil droit parallèle au bord.${st?'\n- Tissu extensible : ne tirez surtout pas, préférez le découpable.':''}\n${$('stab').value==='hydro'?'- Posez le film hydrosoluble sur le dessus, non tendu.\n':''}- Centrez le motif sur le repère du cadre (point 0,0 au centre).\n- Vitesse conseillée : 600–700 points/min pour les premiers essais.`}
 function bytes(a){return new Uint8Array(a)}
 function tern(v){const d=[];for(let i=0;i<5;i++){let r=((v%3)+3)%3;if(r===2)r=-1;d.push(r);v=(v-r)/3}return d}
 const XB=[[0,128,64],[1,128,64],[0,32,16],[1,32,16],[2,32,16]],YB=[[0,1,2],[1,1,2],[0,4,8],[1,4,8],[2,4,8]];
