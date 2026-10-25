@@ -1,7 +1,13 @@
 services:
-  atelier-broderie:
-    build: .
-    container_name: atelier-broderie
+  broderieia:
+    build:
+      context: .
+      args:
+        APP_VERSION: "2.1"
+    image: broderieia:2.1
+    container_name: broderieia
     ports:
       - "8080:80"
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped
