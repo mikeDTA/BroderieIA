@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atelier Broderie – photo vers DST</title>
+<!-- Atelier Broderie © [Michaël PONCET] – CC BY-NC 4.0 (voir LICENSE). Utilisation non commerciale uniquement. -->
+<style>
+:root{--bg:#17213a;--pn:#212e4f;--ink:#e8ebf3;--mut:#9aa6c4;--ac:#f2b134;--ln:#34456f}
+@media(prefers-color-scheme:light){:root{--bg:#eef1f7;--pn:#fff;--ink:#17213a;--mut:#56628a;--ln:#c8d0e4}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Georgia,serif;display:flex;min-height:100vh}
+aside{width:290px;padding:18px;background:var(--pn);border-right:1px solid var(--ln);overflow:auto}
+main{flex:1;padding:18px;overflow:auto}h1{font-size:21px;margin:0 0 12px}h2{font-size:15px;margin:16px 0 6px}
+label{display:block;margin:6px 0;color:var(--mut)}select,input[type=number],button{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:5px;padding:5px 8px}
+select{width:100%}button{cursor:pointer}button.go{background:var(--ac);color:#17213a;border-color:var(--ac);font-weight:bold}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac)}
+.row{display:flex;gap:8px;align-items:center}.row input[type=range]{flex:1}.row input[type=number]{width:72px}
+#cv{max-width:100%;background:#d9d4c7;border:1px solid var(--ln);border-radius:4px}
+#quick{position:fixed;top:0;right:0;width:25vw;min-width:270px;height:100vh;background:var(--pn);border-left:2px solid var(--ac);padding:16px;overflow:auto;display:none;z-index:5}
+#adv{display:none}.thr{display:flex;gap:8px;align-items:center;margin:4px 0}.thr b{width:18px;height:18px;border-radius:50%;border:1px solid var(--ln)}
+pre{white-space:pre-wrap;background:var(--pn);padding:10px;border-radius:5px;border:1px solid var(--ln)}
+@media(max-width:800px){body{flex-direction:column}aside{width:auto}#quick{width:100%}}
+</style></head><body>
+<aside>
+<h1>Atelier Broderie</h1>
+<input type="file" id="f" accept="image/*,.svg"><small style="color:var(--mut)">JPEG, PNG, SVG, GIF, WebP, BMP…</small>
+<h2>Matière</h2>
+<label>Tissu<select id="fab"></select></label>
+<label>Stabilisateur<select id="stab"></select></label>
+<h2>Style</h2>
+<label><input type="checkbox" id="portrait"> Portrait (effet dessin à la main)</label>
+<label><input type="checkbox" id="bw"> Noir et blanc</label>
+<label><input type="checkbox" id="skipBg" checked> Ignorer le fond</label>
+<label><input type="checkbox" id="underlay" checked> Sous-couche</label>
+<h2>Exporter</h2>
+<div class="row"><button class="go" id="xdst">DST</button><button id="xedr">EDR (couleurs)</button></div>
+<small style="color:var(--mut)">Format 100/10O Toyota : pas encore disponible, ouvrez le DST dans Embird pour le convertir.</small>
+<h2>Affichage</h2>
+<div class="row"><button id="bq">Réglages rapides</button><button id="ba">Vue avancée</button></div>
+</aside>
+<main>
+<canvas id="cv" width="800" height="600"></canvas>
+<p id="info" style="color:var(--mut)">Importez une image pour générer le motif.</p>
+<div id="adv"><h2>Tous les réglages</h2><div id="advc"></div></div>
+<h2>Fils</h2><div id="thr"></div>
+<h2>Montage sur cadre et aiguille</h2><pre id="mnt">—</pre>
+</main>
+<div id="quick"><div class="row"><h2 style="margin:0;flex:1">Réglages rapides</h2><button id="qx">Fermer</button></div><div id="qc"></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const FAB={coton:{n:'Coton / popeline',sp:.40,pc:.2,nd:'75/11 universelle',st:'decoupable'},jersey:{n:'Jersey / maille (extensible)',sp:.45,pc:.3,nd:'75/11 bille (ballpoint)',st:'decoupable'},polo:{n:'Polo piqué',sp:.42,pc:.3,nd:'75/11 bille',st:'decoupable'},polaire:{n:'Polaire',sp:.45,pc:.25,nd:'90/14 universelle',st:'hydro'},denim:{n:'Jean / toile épaisse',sp:.38,pc:.15,nd:'90/14 jeans',st:'dechirable'},feutrine:{n:'Feutrine',sp:.40,pc:.1,nd:'80/12 universelle',st:'dechirable'},soie:{n:'Satin / soie (fin)',sp:.50,pc:.1,nd:'65/9 pointe fine',st:'decoupable'},eponge:{n:'Éponge / serviette',sp:.45,pc:.3,nd:'90/14 universelle',st:'hydro'},simili:{n:'Cuir / simili',sp:.50,pc:.1,nd:'90/14 cuir',st:'dechirable'}};
+const STB={decoupable:{n:'Découpable (cutaway)',f:1,t:'Stabilisateur découpable 40–60 g, collé en spray ou thermocollé au dos.'},dechirable:{n:'Déchirable (tearaway)',f:1.05,t:'Stabilisateur déchirable, tissu stable uniquement.'},thermo:{n:'Thermocollant',f:1,t:'Thermocollant au dos, repassé avant de tendre le cadre.'},hydro:{n:'Hydrosoluble (topping)',f:1.1,t:'Film hydrosoluble sur le dessus pour que les points ne s’enfoncent pas dans le tissu.'}};
+const THR=[['Blanc','#f5f5f0'],['Noir','#141414'],['Rouge','#c8232c'],['Bordeaux','#7a1730'],['Rose','#e88ab0'],['Orange','#ee7a1c'],['Jaune','#f3cf2a'],['Vert clair','#7bc043'],['Vert foncé','#1f6b3a'],['Turquoise','#27a9b8'],['Bleu','#2a5db0'],['Marine','#1b2a55'],['Violet','#6b3fa0'],['Marron','#6b4226'],['Beige','#d2b48c'],['Gris','#8a8d93']];
+const P={width:100,colors:5,spacing:.4,stitchLen:3.5,angle:45,stagger:3,pullComp:.2,underlaySpacing:2.5,minStitch:.3,hatch:1};
+const SPEC=[['width','Largeur (mm)',20,300,1,1],['colors','Nombre de couleurs',2,12,1,1],['spacing','Espacement des rangs (mm)',.2,1.2,.05,1],['stitchLen','Longueur de point (mm)',1,7,.1,1],['angle','Angle du remplissage (°)',0,180,1,1],['pullComp','Compensation de tirage (mm)',0,1,.05,1],['stagger','Décalage des rangs (nb)',1,6,1,0],['underlaySpacing','Espacement sous-couche (mm)',1,5,.1,0],['minStitch','Point minimum (mm)',.1,1,.05,0],['hatch','Espacement des hachures portrait (mm)',.5,3,.1,0]];
+let img=null,blocks=[],dims={W:100,H:100},timer;
+for(const[k,v]of Object.entries(FAB))$('fab').add(new Option(v.n,k));
+for(const[k,v]of Object.entries(STB))$('stab').add(new Option(v.n,k));
+function ctl(s){return`<label>${s[1]}<div class="row"><input type="range" data-k="${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${P[s[0]]}"><input type="number" data-k="${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${P[s[0]]}"></div></label>`}
+$('qc').innerHTML=SPEC.filter(s=>s[5]).map(ctl).join('');$('advc').innerHTML=SPEC.map(ctl).join('');
+document.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;P[k]=+e.target.value;document.querySelectorAll(`[data-k=${k}]`).forEach(i=>i.value=P[k]);later()});
+function setP(k,v){P[k]=v;document.querySelectorAll(`[data-k=${k}]`).forEach(i=>i.value=v)}
+function preset(){const F=FAB[$('fab').value],S=STB[$('stab').value];setP('spacing',+(F.sp*S.f).toFixed(2));setP('pullComp',F.pc);later()}
+$('fab').onchange=()=>{$('stab').value=FAB[$('fab').value].st;preset()};$('stab').onchange=preset;
+['portrait','bw','skipBg','underlay'].forEach(i=>$(i).onchange=later);$('fab').dispatchEvent(new Event('change'));
+$('bq').onclick=()=>$('quick').style.display='block';$('qx').onclick=()=>$('quick').style.display='none';
+$('ba').onclick=()=>$('adv').style.display=$('adv').style.display==='block'?'none':'block';
+$('f').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{img=i;gen()};i.onerror=()=>$('info').textContent='Image illisible : essayez un autre fichier.';i.src=URL.createObjectURL(f)};
+function later(){clearTimeout(timer);timer=setTimeout(()=>img&&gen(),250)}
+function kmeans(px,n){const cs=[],st=Math.max(1,px.length/n|0);for(let i=0;i<n;i++)cs.push(px[Math.min(px.length-1,i*st)].slice(0,3));const lab=new Int16Array(px.length);
+for(let it=0;it<6;it++){const sm=cs.map(()=>[0,0,0,0]);px.forEach((p,i)=>{let b=0,bd=1e9;cs.forEach((c,k)=>{const d=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(d<bd){bd=d;b=k}});lab[i]=b;const s=sm[b];s[0]+=p[0];s[1]+=p[1];s[2]+=p[2];s[3]++});sm.forEach((s,k)=>{if(s[3])cs[k]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]]})}return{cs,lab}}
+function nearest(c){let b=THR[0],bd=1e9;for(const t of THR){const h=t[1],r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),bl=parseInt(h.slice(5),16),d=(r-c[0])**2+(g-c[1])**2+(bl-c[2])**2;if(d<bd){bd=d;b=t}}return b}
+function fill(mask,ang,sp,len,stag,pc){const{W,H}=dims,a=ang*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),cx=W/2,cy=H/2,D=Math.hypot(W,H)/2,out=[];let row=0,dir=1,last=null;
+for(let t=-D;t<=D;t+=sp,row++){const runs=[];let s0=null;
+for(let s=-D;s<=D;s+=.25){const on=mask(cx+s*ca-t*sa,cy+s*sa+t*ca);if(on&&s0===null)s0=s;if(!on&&s0!==null){runs.push([s0,s-.25]);s0=null}}
+if(s0!==null)runs.push([s0,D]);if(dir<0)runs.reverse();let any=0;
+for(const r of runs){const a0=r[0]-pc,a1=r[1]+pc;if(a1-a0<P.minStitch)continue;any=1;const o=len*((row%stag)/stag),q=[a0];let s=a0+(o>.3?o:len);while(s<a1-.3){q.push(s);s+=len}q.push(a1);if(dir<0)q.reverse();
+q.forEach((v,i)=>{const x=cx+v*ca-t*sa,y=cy+v*sa+t*ca;const j=i===0&&(!last||Math.hypot(x-last[0],y-last[1])>2.5);out.push({x,y,j});last=[x,y]})}
+if(any)dir=-dir}return out}
+function gen(){const W=P.width,gw=Math.min(320,img.width),gh=Math.max(1,Math.round(gw*img.height/img.width)),H=W*gh/gw;dims={W,H};
+const c=document.createElement('canvas');c.width=gw;c.height=gh;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,gw,gh);x.drawImage(img,0,0,gw,gh);
+const d=x.getImageData(0,0,gw,gh).data,px=[];for(let i=0;i<d.length;i+=4)px.push([d[i],d[i+1],d[i+2]]);
+const{cs,lab}=kmeans(px,P.colors),cell=W/gw,cnt={};
+for(let i=0;i<gw;i++){[i,gw*(gh-1)+i].forEach(j=>cnt[lab[j]]=(cnt[lab[j]]||0)+1)}
+const bg=$('skipBg').checked?+Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]:-1;
+const at=(X,Y)=>{const gx=X/cell|0,gy=Y/cell|0;return gx<0||gy<0||gx>=gw||gy>=gh?-1:gy*gw+gx};
+const lum=i=>(.299*px[i][0]+.587*px[i][1]+.114*px[i][2])/255;
+blocks=[];const bw=$('bw').checked,spc=P.spacing,add=(color,pts)=>pts.length&&blocks.push({color,pts});
+if($('portrait').checked){
+ const order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[a][0]+cs[a][1]+cs[a][2])-(cs[b][0]+cs[b][1]+cs[b][2]));
+ const keep=order.slice(0,Math.max(1,Math.ceil(order.length/2)));
+ keep.forEach((k,n)=>{const col=bw?'#141414':nearest(cs[k])[1],h=P.hatch*(1+n*.6);
+  add(col,[...fill((X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k},45,h,P.stitchLen,P.stagger,0),...(n===0?fill((X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k&&lum(i)<.25},-45,h*1.3,P.stitchLen,P.stagger,0):[])])});
+}else{
+ const order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[b][0]+cs[b][1]+cs[b][2])-(cs[a][0]+cs[a][1]+cs[a][2]));
+ order.forEach(k=>{const m=(X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k};let pts=[];
+  if($('underlay').checked)pts=fill(m,P.angle+90,P.underlaySpacing,3,2,-.3);
+  pts=pts.concat(fill(m,P.angle,spc,P.stitchLen,P.stagger,P.pullComp));
+  add(bw?(lum(0)>.5?'#141414':'#141414'):nearest(cs[k])[1],pts)});
+}
+draw();info();threads();mount()}
+function draw(){const cv=$('cv'),{W,H}=dims,k=800/W;cv.width=800;cv.height=Math.round(H*k);const x=cv.getContext('2d');x.fillStyle=getComputedStyle(document.body).colorScheme==='dark'?'#d9d4c7':'#e4dfd2';x.fillStyle='#d9d4c7';x.fillRect(0,0,cv.width,cv.height);x.lineCap='round';
+const pass=(w,off,fn)=>blocks.forEach(b=>{x.lineWidth=w;x.strokeStyle=fn(b);x.beginPath();b.pts.forEach((p,i)=>{const X=p.x*k+off,Y=p.y*k+off;(i===0||p.j)?x.moveTo(X,Y):x.lineTo(X,Y)});x.stroke()});
+pass(2.6,1.2,()=>'rgba(0,0,0,.28)');pass(2,0,b=>b.color);pass(.7,-.4,()=>'rgba(255,255,255,.28)')}
+function info(){const n=blocks.reduce((s,b)=>s+b.pts.length,0);$('info').textContent=`${n} points · ${blocks.length} couleurs · ${dims.W.toFixed(0)} × ${dims.H.toFixed(0)} mm`}
+function threads(){$('thr').innerHTML='';blocks.forEach((b,i)=>{const d=document.createElement('div');d.className='thr';d.innerHTML=`<b style="background:${b.color}"></b>Aiguille ${i+1} <input type="color" value="${b.color}">`;d.querySelector('input').oninput=e=>{b.color=e.target.value;d.querySelector('b').style.background=b.color;draw()};$('thr').append(d)})}
+function mount(){const F=FAB[$('fab').value],S=STB[$('stab').value],st=['jersey','polo','polaire','eponge'].includes($('fab').value);
+$('mnt').textContent=`Aiguille : ${F.nd}\nStabilisateur : ${S.t}\n\n1. Posez le stabilisateur au dos du tissu (le plus grand que le cadre).\n2. Tendez dans le cadre sans étirer : le tissu doit rester à plat, fil droit parallèle au bord.${st?'\n3. Tissu extensible : ne tirez surtout pas, préférez le découpable.':''}\n${$('stab').value==='hydro'?'3. Posez le film hydrosoluble sur le dessus, non tendu.\n':''}4. Centrez le motif sur le repère du cadre (point 0,0 au centre).\n5. Vitesse conseillée : 600–700 points/min pour les premiers essais.`}
+function bytes(a){return new Uint8Array(a)}
+function tern(v){const d=[];for(let i=0;i<5;i++){let r=((v%3)+3)%3;if(r===2)r=-1;d.push(r);v=(v-r)/3}return d}
+const XB=[[0,128,64],[1,128,64],[0,32,16],[1,32,16],[2,32,16]],YB=[[0,1,2],[1,1,2],[0,4,8],[1,4,8],[2,4,8]];
+function rec(dx,dy,fl){const b=[0,0,fl];tern(dx).forEach((v,i)=>{if(v)b[XB[i][0]]|=v>0?XB[i][1]:XB[i][2]});tern(dy).forEach((v,i)=>{if(v)b[YB[i][0]]|=v>0?YB[i][1]:YB[i][2]});return b}
+function dst(){const o=[];let cx=0,cy=0,mnx=0,mxx=0,mny=0,mxy=0,n=0;const {W,H}=dims;
+const mv=(tx,ty,fl)=>{while(tx!==cx||ty!==cy){const dx=Math.max(-121,Math.min(121,tx-cx)),dy=Math.max(-121,Math.min(121,ty-cy));o.push(...rec(dx,dy,fl));cx+=dx;cy+=dy;n++;mnx=Math.min(mnx,cx);mxx=Math.max(mxx,cx);mny=Math.min(mny,cy);mxy=Math.max(mxy,cy)}};
+blocks.forEach((b,i)=>{if(i>0){o.push(0,0,195);n++}b.pts.forEach(p=>{const X=Math.round((p.x-W/2)*10),Y=-Math.round((p.y-H/2)*10);mv(X,Y,p.j||(i>0&&p===b.pts[0])?131:3)})});
+o.push(0,0,243);n++;
+const pad=(s,l)=>s.padEnd(l,' ').slice(0,l),f=(v,l)=>String(v).padStart(l,' ');
+let h=`LA:${pad('ATELIER',16)}\rST:${f(n,7)}\rCO:${f(Math.max(0,blocks.length-1),3)}\r+X:${f(mxx,5)}\r-X:${f(-mnx,5)}\r+Y:${f(mxy,5)}\r-Y:${f(-mny,5)}\rAX:+${f(0,5)}\rAY:+${f(0,5)}\rMX:+${f(0,5)}\rMY:+${f(0,5)}\rPD:******\r\x1a`;
+h=pad(h,512);const hb=[...h].map(c=>c.charCodeAt(0));return bytes([...hb,...o])}
+function save(data,name){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=name;a.click()}
+$('xdst').onclick=()=>blocks.length?save(dst(),'broderie.dst'):alert('Importez d’abord une image.');
+$('xedr').onclick=()=>{if(!blocks.length)return alert('Importez d’abord une image.');const a=[];blocks.forEach(b=>{a.push(parseInt(b.color.slice(1,3),16),parseInt(b.color.slice(3,5),16),parseInt(b.color.slice(5),16),0)});save(bytes(a),'broderie.edr')};
+</script></body></html>
