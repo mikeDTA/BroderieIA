@@ -11,17 +11,20 @@ Ce guide s'adresse à des personnes qui n'ont aucune habitude de l'informatique.
    * **Dépôt** : le « dossier » du projet sur GitHub.
    * **DST** : le fichier de broderie que la machine sait lire. **EDR** : la liste des couleurs de fils.
    * **Point** : un trou d'aiguille. **Coupe de fil** : la machine coupe le fil pour passer à une autre zone, ce qui laisse un petit bout de fil à rattraper.
+   * **Serveur** : un ordinateur toujours allumé qui met l'application à disposition par internet ou dans votre réseau.
+   * **Docker** : un outil qui range l'application et son serveur web dans une « boîte » prête à démarrer.
+   * **Terminal** (Konsole sous Kubuntu) : une fenêtre où l'on tape des commandes.
    * Vous avez besoin d'un ordinateur, d'une connexion internet, d'une adresse e-mail et d'une photo ou d'un dessin.
 
 =====2. Récupérer le projet depuis votre GitHub=====
 
-   1) Ouvrez votre navigateur et allez sur ""https://github.com/VOTRE-PSEUDO/atelier-broderie"".
+   1) Ouvrez votre navigateur et allez sur ""https://github.com/mikeDTA/atelier-broderie"".
    1) Cliquez sur le bouton vert **Code**.
    1) Cliquez sur **Download ZIP** : un fichier se télécharge, souvent dans le dossier Téléchargements.
    1) Faites un clic droit sur ce fichier, puis **Extraire tout** (Windows) ou double-cliquez dessus (Mac).
    1) Dans le dossier obtenu, double-cliquez sur ""index.html"" : l'application s'ouvre dans votre navigateur. Aucune installation n'est nécessaire.
 
-Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/VOTRE-PSEUDO/atelier-broderie.git"".
+Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/mikeDTA/atelier-broderie.git"".
 
 =====3. Installer le projet sur GitHub=====
 
@@ -46,7 +49,7 @@ Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/VOTRE
    1) Cliquez sur l'onglet **Settings** du dépôt, puis **Pages** dans le menu de gauche.
    1) Sous **Build and deployment**, choisissez **Deploy from a branch**.
    1) Pour **Branch**, choisissez ""main"" et ""/ (root)"", puis **Save**.
-   1) Patientez une à deux minutes et rafraîchissez : l'adresse ""https://VOTRE-PSEUDO.github.io/atelier-broderie/"" apparaît en haut.
+   1) Patientez une à deux minutes et rafraîchissez : l'adresse ""https://mikeDTA.github.io/atelier-broderie/"" apparaît en haut.
 
 ====Modifier plus tard====
 Refaites **Add file > Upload files** avec un fichier du même nom : il remplace l'ancien.
@@ -58,7 +61,9 @@ Refaites **Add file > Upload files** avec un fichier du même nom : il remplace 
    1) Cliquez sur **Choose File** (Choisir un fichier) à gauche et sélectionnez votre image : JPEG, PNG, SVG, GIF, WebP.
    1) Le motif apparaît seul au centre. Les réglages par défaut conviennent à du coton avec un stabilisateur découpable.
 
-{{attach file="02-import.png" desc="Motif généré après l'import"}}
+{{attach file="02-import.png" desc="Motif généré après l'import : l'écran se lit de gauche à droite, réglages à gauche, aperçu au centre, fils en dessous"}}
+
+Tout est visible sans faire défiler la page : les réglages à gauche (sur deux colonnes), l'aperçu et le montage au centre, la liste des fils en dessous. Les boutons **Réglages rapides** et **Tous les réglages** ouvrent des panneaux superposés.
 
    1) Dans **Matière**, choisissez votre **Tissu** puis votre **Stabilisateur**. Le motif se recalcule : espacement des rangs et compensation de tirage changent.
 
@@ -96,11 +101,11 @@ Cliquez sur **Réglages rapides** : un panneau apparaît sur le quart droit de l
    * **Angle** : direction des lignes de remplissage. Changer d'angle entre deux zones donne du relief.
    * **Compensation de tirage** : élargit les formes pour contrer le rétrécissement du tissu. Plage 0 à 1 mm. Montez sur les tissus extensibles.
 
-=====7. La vue avancée : tous les réglages=====
+=====7. Tous les réglages=====
 
-Cliquez sur **Vue avancée** (à gauche) : tous les réglages s'affichent sous l'aperçu, rangés par famille.
+Cliquez sur **Tous les réglages** (en bas à gauche) : une fenêtre affiche tous les réglages en colonnes, rangés par famille, sans défilement. Cliquez sur **Fermer** pour revenir.
 
-{{attach file="05-avance.png" desc="Vue avancée"}}
+{{attach file="05-avance.png" desc="Fenêtre Tous les réglages"}}
 
 En plus des réglages rapides :
 
@@ -112,6 +117,16 @@ En plus des réglages rapides :
    * **Espacement satin** (0,2 à 0,8 mm, défaut 0,4) et **Longueur max satin** (2 à 12 mm, défaut 6).
    * **Longueur point droit** (1 à 5 mm, défaut 2,5) pour les contours.
    * **Espacement des hachures portrait** (0,5 à 3 mm, défaut 1).
+
+Réglages ajoutés, inspirés d'Ink/Stitch :
+
+   * **Inverser le sens de départ** (0 ou 1) : le remplissage commence par l'autre côté. Équivalent : ""flip"".
+   * **Variation aléatoire de longueur** (0 à 50 %) : rend les points moins réguliers pour éviter l'effet de rainures. Équivalent : ""random_stitch_length_jitter_percent"".
+   * **Graine aléatoire** (1 à 99) : change le hasard du réglage précédent. Équivalent : ""random_seed"".
+   * **Retrait de la sous-couche** (0 à 1,5 mm, défaut 0,3) : la sous-couche s'arrête un peu avant le bord. Équivalent : ""fill_underlay_inset_mm"".
+   * **Passage central sous le satin** (0 ou 1, défaut 1) : une ligne de points droits est posée au milieu avant le satin. Équivalent : ""center_walk_underlay"".
+   * **Répétitions du point de piqûre** (0 à 3) : chaque point droit est refait en aller-retour pour épaissir le trait. Équivalent : ""bean_stitch_repeats"".
+   * **Répétitions du contour** (1 à 3) : le contour est brodé plusieurs fois. Équivalent : ""repeats"".
 
 Les cases du menu de gauche : **Ignorer le fond** (ne brode pas la couleur dominante des bords), **Sous-couche** (active ou non la trame).
 
@@ -164,13 +179,23 @@ Je n'ai pas inclus la palette Madeira dans le projet : ses données de couleur n
    1) Baissez **Nombre de couleurs** si le motif reste chargé.
    1) Regardez le compteur de coupes et l'aperçu après chaque changement.
 
-=====14. Recettes selon le tissu=====
+=====14. Tissus, stabilisateurs et aiguilles=====
 
-   * **Coton, popeline** : espacement 0,4, stabilisateur découpable, aiguille 75/11.
-   * **Jersey, maille, polo** : espacement 0,45, compensation 0,3, découpable obligatoire, aiguille à bille.
-   * **Polaire, éponge** : stabilisateur hydrosoluble sur le dessus pour que les points ne s'enfoncent pas.
-   * **Jean, toile épaisse** : espacement 0,38, aiguille 90/14.
-   * **Satin, soie** : espacement 0,5, aiguille fine 65/9.
+Choisissez le tissu : l'application règle le **stabilisateur dessous**, le **stabilisateur dessus** et l'aiguille. Vous pouvez changer les deux stabilisateurs à la main.
+
+{{attach file="03-tissu.png" desc="Éponge : dessous découpable, dessus hydrosoluble"}}
+
+   * **Coton, popeline** : dessous découpable (ou déchirable), dessus inutile, aiguille 75/11 universelle, rangs à 0,40 mm.
+   * **Jersey, maille** : dessous découpable obligatoire, dessus facultatif si le motif est dense, aiguille 75/11 à bille, compensation 0,3 mm.
+   * **Polo piqué** : dessous découpable, dessus facultatif, aiguille 75/11 à bille.
+   * **Polaire** : dessous découpable, dessus hydrosoluble conseillé pour que les points ne s'enfoncent pas, aiguille 90/14.
+   * **Éponge, serviette** : dessous découpable, dessus hydrosoluble indispensable (les boucles avalent les points), aiguille 90/14.
+   * **Jean, toile épaisse** : dessous déchirable, dessus inutile, aiguille 90/14 jeans, rangs à 0,38 mm.
+   * **Feutrine** : dessous déchirable, dessus inutile, aiguille 80/12.
+   * **Satin, soie** : dessous découpable léger, dessus inutile, aiguille fine 65/9, rangs à 0,50 mm.
+   * **Cuir, simili** : dessous déchirable, dessus inutile, aiguille 90/14 cuir, rangs à 0,50 mm.
+
+Découpable : on découpe l'excédent autour du motif, il reste sous la broderie. Déchirable : on le déchire. Hydrosoluble : il se dissout à l'eau.
 
 =====15. Si quelque chose ne va pas=====
 
@@ -253,9 +278,158 @@ Chaque point est un petit bloc éclairé, avec la couleur du fil choisi pour l'a
    * **EDR** : la liste des couleurs de fils.
    * **EOF** : c'est le fichier de projet vectoriel d'Embird Studio, sans description publique. Il n'est pas disponible. Ouvrez le DST dans Embird pour continuer à le modifier.
 
-=====23. Ce qui n'est pas encore disponible=====
+=====24. Faire correspondre les couleurs de l'image et du fil=====
+
+   1) Dans la liste **Fils**, chaque ligne commence par un carré : la couleur moyenne de la zone **dans l'image**. Il est suivi d'une pastille : la couleur du **fil** retenu.
+   1) Le fil est choisi comme l'œil le verrait (calcul en espace colorimétrique Lab), pas par simple addition de rouge, vert et bleu.
+   1) Si le fil proposé ne vous convient pas, choisissez-en un autre dans le menu déroulant de la ligne, ou cliquez sur la case de couleur.
+   1) Plus la palette est riche, plus la correspondance est fidèle : importez la palette Madeira (partie 12) pour de meilleurs résultats qu'avec les 18 couleurs génériques.
+
+=====25. Ajouter un texte sur l'image brodée=====
+
+   1) Dans la zone **Texte sur l'image**, tapez votre texte.
+   1) Réglez la **Taille**, la **Position horizontale** et la **Position verticale** avec les curseurs.
+   1) Le texte est brodé en satin par-dessus. Les points de l'image sont retirés sous les lettres, avec une petite marge : les fils ne se superposent pas.
+   1) Le texte a sa ligne dans la liste **Fils** (mention « texte »). Changez sa couleur comme pour les autres fils.
+
+{{attach file="14-texte-image.png" desc="Texte sur l'image"}}
+
+Utilisez un texte assez grand : sous 10 mm de haut, les lettres deviennent difficiles à broder. Le texte est brodé en dernier.
+
+=====26. Mettre l'application sur un serveur (Kubuntu, Docker)=====
+
+L'application n'a besoin que d'un **serveur web** : pas de base de données, pas de PHP. Docker installe ce serveur (nginx) pour vous. Les captures d'écran de cette partie n'ont pas pu être faites sur Kubuntu : les commandes sont donc données en entier, à copier.
+
+====Étape 1 : ouvrir le terminal====
+   1) Cliquez sur le menu en bas à gauche, ou tapez sur la touche Windows de votre clavier.
+   1) Écrivez « Konsole » et cliquez sur l'application. Vous pouvez aussi appuyer sur Ctrl + Alt + T.
+   1) Une fenêtre noire s'ouvre : c'est là que vous collez les commandes. Collez avec Ctrl + Maj + V, puis Entrée.
+
+====Étape 2 : installer Docker====
+Collez les commandes une par une. Le mot de passe de votre session est demandé : rien ne s'affiche pendant la saisie, c'est normal.
+
+%%
+sudo apt update
+sudo apt install -y ca-certificates curl git
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+%%
+
+Puis, en une seule commande :
+
+%%
+echo "deb [arch=$(dpkg --print-architecture) \
+signed-by=/etc/apt/keyrings/docker.asc] \
+https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo ${UBUNTU_CODENAME:-$VERSION_CODENAME}) stable" \
+| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io \
+  docker-buildx-plugin docker-compose-plugin
+%%
+
+Autorisez votre compte à utiliser Docker, puis **fermez votre session et rouvrez-la** :
+
+%%
+sudo usermod -aG docker $USER
+%%
+
+Vérifiez l'installation avec ces deux commandes : chacune doit afficher un numéro de version.
+
+%%
+docker --version
+docker compose version
+%%
+
+====Étape 3 : récupérer le projet====
+%%
+cd ~
+git clone https://github.com/mikeDTA/atelier-broderie.git
+cd atelier-broderie
+ls
+%%
+La liste doit contenir ""Dockerfile"", ""docker-compose.yml"", ""nginx.conf"", ""index.html"" et ""docs"". Sans Git, téléchargez le ZIP depuis GitHub (partie 2), décompressez-le et placez-vous dans le dossier avec la commande ""cd"".
+
+====Étape 4 : les fichiers Docker (déjà dans le projet)====
+**Dockerfile** : décrit la boîte (nginx plus les fichiers de l'application).
+
+%%
+FROM nginx:1.27-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY index.html /usr/share/nginx/html/index.html
+COPY docs /usr/share/nginx/html/docs
+EXPOSE 80
+%%
+
+**docker-compose.yml** : donne le nom de la boîte, son port (8080) et le redémarrage automatique.
+
+%%
+services:
+  atelier-broderie:
+    build: .
+    container_name: atelier-broderie
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+%%
+
+**nginx.conf** : réglages du serveur web (compression, en-têtes de sécurité).
+
+%%
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    gzip on;
+    location / { try_files $uri $uri/ =404; }
+}
+%%
+
+Pour modifier un de ces fichiers, ouvrez-le avec l'éditeur **Kate** (clic droit sur le fichier, puis Ouvrir avec Kate).
+
+====Étape 5 : démarrer====
+%%
+docker compose up -d --build
+docker ps
+%%
+La deuxième commande doit afficher une ligne ""atelier-broderie"" avec l'état « Up ». Ouvrez Firefox et allez sur ""http://localhost:8080"" : l'application apparaît, comme sur la capture de la partie 4.
+
+====Étape 6 : l'ouvrir depuis un autre ordinateur====
+   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.168.1.20"") est celle du serveur.
+   1) Sur l'autre ordinateur, allez sur ""http://192.168.1.20:8080"".
+   1) Si la page ne s'ouvre pas, autorisez le port : ""sudo ufw allow 8080/tcp"" (le pare-feu est inactif par défaut sous Kubuntu : ""sudo ufw status"" le dit).
+
+====Étape 7 : gérer le service====
+   * Voir les messages : ""docker compose logs -f"" (Ctrl + C pour quitter).
+   * Arrêter : ""docker compose down"".
+   * Mettre à jour après un changement sur GitHub : ""git pull"" puis ""docker compose up -d --build"".
+   * Au redémarrage du serveur, l'application repart seule grâce à ""restart: unless-stopped"".
+
+====Sans Docker : nginx seul====
+%%
+sudo apt update
+sudo apt install -y nginx
+sudo cp -r index.html docs /var/www/html/
+%%
+Ouvrez ""http://localhost"" dans Firefox. Pour mettre à jour, recopiez les fichiers avec la dernière commande.
+
+====Avec un nom de domaine et le HTTPS====
+Une fois l'application en ligne, achetez un nom de domaine, faites-le pointer vers l'adresse IP publique du serveur, puis, avec la version nginx seul :
+
+%%
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d votre-domaine.fr
+%%
+
+Attention : la vue 3D et la reconnaissance d'écriture chargent des bibliothèques depuis internet. Un serveur sans accès à internet ne peut pas les utiliser, et rien d'autre n'est affecté.
+
+=====27. Ce qui n'est pas encore disponible=====
 
    * Export EOF, palette Madeira intégrée (à importer vous-même).
+   * Réglages d'Ink/Stitch pas encore intégrés : zigzag, sous-couches de contour et en zigzag, retrait des points courts, méthodes de remplissage (spirale, méandre, guidé, circulaire), points de départ et d'arrivée, arrêt ou coupe après un objet, colonnes de satin à rails, polices de lettrage Ink/Stitch.
    * Le satin n'est pas encore soigné aux jonctions entre traits, et la reconnaissance d'écriture n'a pas pu être contrôlée avant livraison : elle dépend d'un chargement depuis internet.
    * Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
    * Le schéma de montage est un texte, pas encore un dessin.
