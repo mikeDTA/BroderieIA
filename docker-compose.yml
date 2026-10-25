@@ -1,0 +1,7 @@
+services:
+  atelier-broderie:
+    build: .
+    container_name: atelier-broderie
+    ports:
+      - "8080:80"
+    restart: unless-stopped
