@@ -17,5 +17,5 @@ Importez une image, choisissez tissu et stabilisateur (l'espacement et le tirage
 Cochez **Portrait** pour un rendu hachuré façon dessin, avec option noir et blanc.
 
 ## État actuel
-Fonctionnel : import de tout format d'image, conversion couleur / niveaux de gris / noir et blanc, simplification des zones (moins de coupes de fil), types de point (tatami, satin approché, point droit, contours), sous-couche, portrait, import de palette de fils (.gpl ou CSV), nombre de points et durée estimée, texte brodé, rendu relief, vue 3D tournante (three.js), 15 aiguilles avec choix des fils en direct, exports DST, 10O et EDR,  guide en PDF / Markdown / YesWiki dans `docs/`.
-À venir : export EOF (format Embird Studio non documenté), vrai satin, reconnaissance d'écriture, réglages Ink/Stitch restants.
+Fonctionnel : import de tout format d'image, conversion couleur / niveaux de gris / noir et blanc, simplification des zones (moins de coupes de fil), style de point choisi par couleur (tatami, vrai satin, auto, point droit, contours), fils regroupés par couleur, OCR pour broder l'écriture en satin, sous-couche, portrait, import de palette de fils (.gpl ou CSV), nombre de points et durée estimée, texte brodé, rendu relief, vue 3D tournante (three.js), 15 aiguilles avec choix des fils en direct, exports DST, 10O et EDR,  guide en PDF / Markdown / YesWiki dans `docs/`.
+À venir : export EOF (format Embird Studio non documenté), satin plus soigné aux jonctions, réglages Ink/Stitch restants.

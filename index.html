@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Atelier Broderie – photo vers DST</title>
-<!-- Atelier Broderie © [Votre nom] – CC BY-NC 4.0 (voir LICENSE). Utilisation non commerciale uniquement. -->
+<!-- Atelier Broderie © Michaël PONCET (https://github.com/mikeDTA) – CC BY-NC 4.0 (voir LICENSE). Utilisation non commerciale uniquement. -->
 <style>
 :root{--bg:#17213a;--pn:#212e4f;--ink:#e8ebf3;--mut:#9aa6c4;--ac:#f2b134;--ln:#34456f}
 @media(prefers-color-scheme:light){:root{--bg:#eef1f7;--pn:#fff;--ink:#17213a;--mut:#56628a;--ln:#c8d0e4}}
@@ -14,7 +14,7 @@ select{width:100%}button{cursor:pointer}button.go{background:var(--ac);color:#17
 #cv{max-width:100%;background:#d9d4c7;border:1px solid var(--ln);border-radius:4px}
 #quick{position:fixed;top:0;right:0;width:25vw;min-width:270px;height:100vh;background:var(--pn);border-left:2px solid var(--ac);padding:16px;overflow:auto;display:none;z-index:5}
 #adv{display:none}.thr{display:flex;gap:8px;align-items:center;margin:4px 0}.thr b{width:18px;height:18px;border-radius:50%;border:1px solid var(--ln)}
-pre{white-space:pre-wrap;background:var(--pn);padding:10px;border-radius:5px;border:1px solid var(--ln)}
+.thr.sel{outline:2px solid var(--ac);padding:3px;border-radius:5px}.thr{flex-wrap:wrap}.thr select{width:auto;max-width:150px}pre{white-space:pre-wrap;background:var(--pn);padding:10px;border-radius:5px;border:1px solid var(--ln)}
 @media(max-width:800px){body{flex-direction:column}aside{width:auto}#quick{width:100%}}
 </style></head><body>
 <aside>
@@ -24,18 +24,18 @@ pre{white-space:pre-wrap;background:var(--pn);padding:10px;border-radius:5px;bor
 <label>Tissu<select id="fab"></select></label>
 <label>Stabilisateur<select id="stab"></select></label>
 <h2>Style</h2>
-<label><input type="checkbox" id="portrait"> Portrait (effet dessin à la main)</label>
-<label>Conversion<select id="mode"><option value="couleur">Couleur</option><option value="gris">Niveaux de gris</option><option value="nb">Noir et blanc</option></select></label><label>Type de point<select id="ptype"><option value="tatami">Remplissage tatami</option><option value="satin">Satin (approx.)</option><option value="run">Point droit (contours)</option><option value="mix">Tatami + contour</option></select></label>
+<button id="ocr">Détecter l’écriture (OCR)</button><small id="ocrst" style="color:var(--mut)"></small><label><input type="checkbox" id="portrait"> Portrait (effet dessin à la main)</label>
+<label>Conversion<select id="mode"><option value="couleur">Couleur</option><option value="gris">Niveaux de gris</option><option value="nb">Noir et blanc</option></select></label><label>Type de point<select id="ptype"><option value="tatami">Remplissage tatami</option><option value="satin">Satin le long des tracés</option><option value="auto">Auto : satin sur tracés fins, tatami ailleurs</option><option value="run">Point droit (contours)</option><option value="mix">Tatami + contour</option></select></label>
 <label><input type="checkbox" id="skipBg" checked> Ignorer le fond</label>
 <label><input type="checkbox" id="underlay" checked> Sous-couche</label>
 <h2>Texte</h2><input id="txt" placeholder="Votre texte" style="width:100%;font:inherit;padding:5px"><label>Police<select id="fnt"><option value="Arial, sans-serif">Sans empattement</option><option value="Georgia, serif">Avec empattement</option><option value="Courier New, monospace">Machine à écrire</option><option value="Brush Script MT, cursive">Écriture manuscrite</option></select></label><button id="txtgo">Broder ce texte</button><h2>Palette de fils</h2><label>Importer Madeira (.gpl ou CSV)<input type="file" id="pal" accept=".gpl,.csv,.txt"></label><small id="palname" style="color:var(--mut)">Palette générique</small><h2>Exporter</h2>
-<div class="row"><button class="go" id="xdst">DST</button><button id="xedr">EDR (couleurs)</button></div>
-<small style="color:var(--mut)">Format 100/10O Toyota : pas encore disponible, ouvrez le DST dans Embird pour le convertir.</small>
+<div class="row"><button class="go" id="xdst">DST</button><button id="x10o">10O (Toyota)</button><button id="xedr">EDR (couleurs)</button></div>
+<small style="color:var(--mut)">Format EOF (projet Embird Studio) : non disponible, ce format n’est pas documenté.</small>
 <h2>Affichage</h2>
-<label><input type="checkbox" id="relief"> Rendu relief 3D</label><label>Direction de la lumière<input type="range" id="lt" min="0" max="360" value="315"></label><label>Inclinaison de la vue<input type="range" id="tilt" min="0" max="60" value="0"></label><div class="row"><button id="bq">Réglages rapides</button><button id="ba">Vue avancée</button></div>
+<label><input type="checkbox" id="relief"> Rendu relief (aperçu 2D)</label><label><input type="checkbox" id="v3dbox"> Vue 3D tournante (three.js)</label><label><input type="checkbox" id="auto" checked> Rotation automatique</label><label>Direction de la lumière<input type="range" id="lt" min="0" max="360" value="315"></label><label>Inclinaison de la vue<input type="range" id="tilt" min="0" max="60" value="0"></label><div class="row"><button id="bq">Réglages rapides</button><button id="ba">Vue avancée</button></div>
 </aside>
 <main>
-<canvas id="cv" width="800" height="600"></canvas>
+<canvas id="cv" width="800" height="600"></canvas><div id="v3d" style="display:none"></div>
 <p id="info" style="color:var(--mut)">Importez une image pour générer le motif.</p>
 <div id="adv"><h2>Tous les réglages</h2><div id="advc"></div></div>
 <h2>Fils</h2><div id="thr"></div>
@@ -48,7 +48,7 @@ const FAB={coton:{n:'Coton / popeline',sp:.40,pc:.2,nd:'75/11 universelle',st:'d
 const STB={decoupable:{n:'Découpable (cutaway)',f:1,t:'Stabilisateur découpable 40–60 g, collé en spray ou thermocollé au dos.'},dechirable:{n:'Déchirable (tearaway)',f:1.05,t:'Stabilisateur déchirable, tissu stable uniquement.'},thermo:{n:'Thermocollant',f:1,t:'Thermocollant au dos, repassé avant de tendre le cadre.'},hydro:{n:'Hydrosoluble (topping)',f:1.1,t:'Film hydrosoluble sur le dessus pour que les points ne s’enfoncent pas dans le tissu.'}};
 const THR=[['Blanc','#f5f5f0'],['Noir','#141414'],['Rouge','#c8232c'],['Bordeaux','#7a1730'],['Rose','#e88ab0'],['Orange','#ee7a1c'],['Jaune','#f3cf2a'],['Vert clair','#7bc043'],['Vert foncé','#1f6b3a'],['Turquoise','#27a9b8'],['Bleu','#2a5db0'],['Marine','#1b2a55'],['Violet','#6b3fa0'],['Marron','#6b4226'],['Beige','#d2b48c'],['Gris','#8a8d93'],['Gris clair','#c4c6cb'],['Gris foncé','#4d5058']];let PAL=THR;
 const P={width:100,colors:5,speed:650,smooth:1,minRegion:30,noTrim:3,spacing:.4,stitchLen:3.5,angle:45,stagger:3,pullComp:.2,underlaySpacing:2.5,underlayLen:3,underlayAngle:90,satinSpacing:.4,satinMax:6,runLen:2.5,minStitch:.3,hatch:1};
-const SPEC=[['width','Largeur (mm)',20,300,1,1,'Général'],['colors','Nombre de couleurs',2,12,1,1,'Général'],['speed','Vitesse machine (points/min)',200,1000,10,1,'Général'],['minStitch','Point minimum (mm)',.1,1,.05,0,'Général'],
+const SPEC=[['width','Largeur (mm)',20,300,1,1,'Général'],['colors','Nombre de couleurs (15 aiguilles max)',2,15,1,1,'Général'],['speed','Vitesse machine (points/min)',200,1000,10,1,'Général'],['minStitch','Point minimum (mm)',.1,1,.05,0,'Général'],
 ['smooth','Lissage des zones (passes)',0,4,1,1,'Simplification (moins de coupes)'],['minRegion','Zone minimale fusionnée (cellules)',0,300,5,1,'Simplification (moins de coupes)'],['noTrim','Distance sans coupe de fil (mm)',0,10,.5,1,'Simplification (moins de coupes)'],
 ['spacing','Espacement des rangs (mm)',.2,1.2,.05,1,'Point tatami'],['stitchLen','Longueur de point (mm)',1,7,.1,1,'Point tatami'],['angle','Angle (°)',0,180,1,1,'Point tatami'],['stagger','Décalage des rangs (nb)',1,6,1,0,'Point tatami'],['pullComp','Compensation de tirage (mm)',0,1,.05,1,'Point tatami'],
 ['underlaySpacing','Espacement sous-couche (mm)',1,5,.1,0,'Sous-couche'],['underlayLen','Longueur point sous-couche (mm)',1.5,5,.1,0,'Sous-couche'],['underlayAngle','Angle sous-couche relatif (°)',0,180,1,0,'Sous-couche'],
@@ -65,7 +65,7 @@ $('fab').onchange=()=>{$('stab').value=FAB[$('fab').value].st;preset()};$('stab'
 ['portrait','mode','ptype','skipBg','underlay'].forEach(i=>$(i).onchange=later);$('fab').dispatchEvent(new Event('change'));
 $('bq').onclick=()=>$('quick').style.display='block';$('qx').onclick=()=>$('quick').style.display='none';
 $('ba').onclick=()=>$('adv').style.display=$('adv').style.display==='block'?'none':'block';
-$('f').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{img=i;gen()};i.onerror=()=>$('info').textContent='Image illisible : essayez un autre fichier.';i.src=URL.createObjectURL(f)};
+$('f').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{img=i;TM=null;gen()};i.onerror=()=>$('info').textContent='Image illisible : essayez un autre fichier.';i.src=URL.createObjectURL(f)};
 function later(){clearTimeout(timer);timer=setTimeout(()=>img&&gen(),250)}
 function kmeans(px,n){const cs=[px[0].slice(0,3)],sb=px.filter((_,i)=>i%5===0);while(cs.length<n){let bp=sb[0],bd=-1;for(const p of sb){let m=1e9;for(const c of cs){const d=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(d<m)m=d}if(m>bd){bd=m;bp=p}}cs.push(bp.slice(0,3))}const lab=new Int16Array(px.length);
 for(let it=0;it<6;it++){const sm=cs.map(()=>[0,0,0,0]);px.forEach((p,i)=>{let b=0,bd=1e9;cs.forEach((c,k)=>{const d=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(d<bd){bd=d;b=k}});lab[i]=b;const s=sm[b];s[0]+=p[0];s[1]+=p[1];s[2]+=p[2];s[3]++});sm.forEach((s,k)=>{if(s[3])cs[k]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]]})}return{cs,lab}}
@@ -88,34 +88,63 @@ if(s0!==null)runs.push([s0,D]);if(dir<0)runs.reverse();let any=0;
 for(const r of runs){const a0=r[0]-pc,a1=r[1]+pc;if(a1-a0<P.minStitch)continue;any=1;const o=len*((row%stag)/stag),q=[a0];let s=a0+(o>.3?o:len);while(s<a1-.3){q.push(s);s+=len}q.push(a1);if(dir<0)q.reverse();
 q.forEach((v,i)=>{const x=cx+v*ca-t*sa,y=cy+v*sa+t*ca;const j=i===0&&(!last||Math.hypot(x-last[0],y-last[1])>P.noTrim);out.push({x,y,j});last=[x,y]})}
 if(any)dir=-dir}return out}
+const STY={};let S=null,TM=null;
+function dtz(A,w,h){const D=new Float32Array(A.length);for(let i=0;i<A.length;i++)D[i]=A[i]?1e6:0;
+for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(!D[i])continue;let m=D[i];if(x>0)m=Math.min(m,D[i-1]+1);if(y>0){m=Math.min(m,D[i-w]+1);if(x>0)m=Math.min(m,D[i-w-1]+1.414);if(x<w-1)m=Math.min(m,D[i-w+1]+1.414)}D[i]=m}
+for(let y=h-1;y>=0;y--)for(let x=w-1;x>=0;x--){const i=y*w+x;if(!D[i])continue;let m=D[i];if(x<w-1)m=Math.min(m,D[i+1]+1);if(y<h-1){m=Math.min(m,D[i+w]+1);if(x<w-1)m=Math.min(m,D[i+w+1]+1.414);if(x>0)m=Math.min(m,D[i+w-1]+1.414)}D[i]=m}return D}
+function thinCells(G){const{gw,gh,cell}=S,r=Math.max(1,P.satinMax/2/cell),d=dtz(G,gw,gh),Ec=new Uint8Array(G.length);for(let i=0;i<G.length;i++)Ec[i]=d[i]>r?0:1;const d2=dtz(Ec,gw,gh),T=new Uint8Array(G.length);for(let i=0;i<G.length;i++)T[i]=G[i]&&d2[i]>r?1:0;return T}
+function skel(A,w,h){const g=A.slice();let ch=1;while(ch){ch=0;for(let p=0;p<2;p++){const del=[];for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;if(!g[i])continue;
+const n=[g[i-w],g[i-w+1],g[i+1],g[i+w+1],g[i+w],g[i+w-1],g[i-1],g[i-w-1]];let B=0;for(const v of n)B+=v;if(B<2||B>6)continue;let q=0;for(let k=0;k<8;k++)if(!n[k]&&n[(k+1)%8])q++;if(q!==1)continue;
+if(p===0?(n[0]*n[2]*n[4]||n[2]*n[4]*n[6]):(n[0]*n[2]*n[6]||n[0]*n[4]*n[6]))continue;del.push(i)}del.forEach(i=>g[i]=0);if(del.length)ch=1}}return g}
+function paths(g,w,h){const seen=new Uint8Array(g.length),nb=i=>{const x=i%w,y=i/w|0,r=[];for(let dy=-1;dy<2;dy++)for(let dx=-1;dx<2;dx++){if(!dx&&!dy)continue;const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<w&&Y<h&&g[Y*w+X])r.push(Y*w+X)}return r},st=[];
+for(let i=0;i<g.length;i++)if(g[i]&&nb(i).length===1)st.push(i);for(let i=0;i<g.length;i++)if(g[i])st.push(i);const out=[];
+for(const s0 of st){if(seen[s0])continue;const p=[s0];seen[s0]=1;let c=s0;for(;;){const n=nb(c).filter(j=>!seen[j]);if(!n.length)break;n.sort((a,b)=>Math.hypot(a%w-c%w,(a/w|0)-(c/w|0))-Math.hypot(b%w-c%w,(b/w|0)-(c/w|0)));c=n[0];seen[c]=1;p.push(c)}if(p.length>2)out.push(p)}return out}
+function satin(A){const{gw,gh,cell}=S,sk=skel(A,gw,gh),inM=(X,Y)=>{const gx=X/cell|0,gy=Y/cell|0;return X>=0&&Y>=0&&gx<gw&&gy<gh&&A[gy*gw+gx]===1},out=[];
+for(const p of paths(sk,gw,gh)){const q=p.map(i=>[(i%gw+.5)*cell,((i/gw|0)+.5)*cell]),n=q.length;let acc=0,flip=0,last=null;
+for(let i=0;i<n;i++){if(i>0)acc+=Math.hypot(q[i][0]-q[i-1][0],q[i][1]-q[i-1][1]);if(i>0&&acc<P.satinSpacing)continue;acc=0;
+const a=q[Math.max(0,i-3)],b=q[Math.min(n-1,i+3)];let tx=b[0]-a[0],ty=b[1]-a[1];const L=Math.hypot(tx,ty)||1;tx/=L;ty/=L;const nx=-ty,ny=tx,ext=s=>{let e=0;while(e<P.satinMax*.6&&inM(q[i][0]+s*nx*(e+.2),q[i][1]+s*ny*(e+.2)))e+=.2;return e};
+const e1=ext(1)+P.pullComp,e2=ext(-1)+P.pullComp;if(e1+e2<.6+2*P.pullComp)continue;
+const A1=[q[i][0]-nx*e2,q[i][1]-ny*e2],B1=[q[i][0]+nx*e1,q[i][1]+ny*e1],pair=flip?[B1,A1]:[A1,B1];flip^=1;
+for(const pt of pair){if(last){const dd=Math.hypot(pt[0]-last[0],pt[1]-last[1]),m=Math.ceil(dd/P.satinMax);for(let j=1;j<m;j++)out.push({x:last[0]+(pt[0]-last[0])*j/m,y:last[1]+(pt[1]-last[1])*j/m,j:false})}out.push({x:pt[0],y:pt[1],j:!last});last=pt}}}return out}
 function gen(){const W=P.width,gw=Math.min(320,img.width),gh=Math.max(1,Math.round(gw*img.height/img.width)),H=W*gh/gw;dims={W,H};
 const c=document.createElement('canvas');c.width=gw;c.height=gh;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,gw,gh);x.drawImage(img,0,0,gw,gh);
 const d=x.getImageData(0,0,gw,gh).data,px=[],M=$('mode').value;
 for(let i=0;i<d.length;i+=4){const l=.299*d[i]+.587*d[i+1]+.114*d[i+2];px.push(M==='gris'?[l,l,l]:M==='nb'?(l>128?[255,255,255]:[20,20,20]):[d[i],d[i+1],d[i+2]])}
-const{cs,lab}=kmeans(px,M==='nb'?2:P.colors),cell=W/gw,nc=cs.length;smooth(lab,gw,gh,P.smooth,P.minRegion,nc);const cnt={};
+const{cs,lab}=kmeans(px,M==='nb'?2:P.colors),nc=cs.length;smooth(lab,gw,gh,P.smooth,P.minRegion,nc);const cnt={};
 for(let i=0;i<gw;i++){[i,gw*(gh-1)+i].forEach(j=>cnt[lab[j]]=(cnt[lab[j]]||0)+1)}
-const bg=$('skipBg').checked?+Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]:-1;
-const at=(X,Y)=>{const gx=X/cell|0,gy=Y/cell|0;return gx<0||gy<0||gx>=gw||gy>=gh?-1:gy*gw+gx};
-const lum=i=>(.299*px[i][0]+.587*px[i][1]+.114*px[i][2])/255,gcol=k=>M==='nb'?(cs[k][0]>128?['Blanc','#f5f5f0']:['Noir','#141414']):nearest(cs[k],M==='gris');
-blocks=[];const spc=P.spacing,add=(c,pts)=>{pts.forEach((p,i)=>{if(i>0&&p.j&&Math.hypot(p.x-pts[i-1].x,p.y-pts[i-1].y)<=P.noTrim)p.j=false});pts.length&&blocks.push({color:c[1],name:c[0],pts})};
-if($('portrait').checked){
- const order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[a][0]+cs[a][1]+cs[a][2])-(cs[b][0]+cs[b][1]+cs[b][2]));
- order.slice(0,Math.max(1,Math.ceil(order.length/2))).forEach((k,n)=>{const h=P.hatch*(1+n*.6),m=(X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k};
-  add(gcol(k),[...fill(m,45,h,P.stitchLen,P.stagger,0),...(n===0?fill((X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k&&lum(i)<.25},-45,h*1.3,P.stitchLen,P.stagger,0):[])])});
-}else{
- const T=$('ptype').value,order=cs.map((c,k)=>k).filter(k=>k!==bg).sort((a,b)=>(cs[b][0]+cs[b][1]+cs[b][2])-(cs[a][0]+cs[a][1]+cs[a][2]));
- order.forEach(k=>{const m=(X,Y)=>{const i=at(X,Y);return i>=0&&lab[i]===k};let pts=[];
-  if(T!=='run'){if($('underlay').checked&&T!=='satin')pts=fill(m,P.angle+P.underlayAngle,P.underlaySpacing,P.underlayLen,2,-.3);
-   pts=pts.concat(T==='satin'?fill(m,P.angle,P.satinSpacing,P.satinMax,1,P.pullComp):fill(m,P.angle,spc,P.stitchLen,P.stagger,P.pullComp))}
-  if(T==='run'||T==='mix')pts=pts.concat(outline(lab,gw,gh,k,cell));
-  add(gcol(k),pts)})}
-draw();info();threads();mount()}
+const bg=$('skipBg').checked?+Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]:-1,gcol=k=>M==='nb'?(cs[k][0]>128?['Blanc','#f5f5f0']:['Noir','#141414']):nearest(cs[k],M==='gris');
+S={lab,gw,gh,cell:W/gw,cs,bg,px,M,col:cs.map((_,k)=>gcol(k)),tm:TM};rebuild()}
+function stitchGroup(g,st){const{lab,gw,gh,cell}=S,N=gw*gh,inK=new Uint8Array(S.cs.length);g.ks.forEach(k=>inK[k]=1);const G=new Uint8Array(N);for(let i=0;i<N;i++)G[i]=inK[lab[i]];
+const T=st.type,ang=st.angle,SC=new Uint8Array(N),TC=new Uint8Array(N);
+if(T==='satin')SC.set(G);else if(T==='auto'){const th=thinCells(G);for(let i=0;i<N;i++)SC[i]=G[i]&&th[i]?1:0}
+if(S.tm&&T!=='run')for(let i=0;i<N;i++)if(G[i]&&S.tm[i])SC[i]=1;
+for(let i=0;i<N;i++)TC[i]=G[i]&&!SC[i]?1:0;let pts=[];
+if(T!=='run'){if(SC.some(v=>v))pts=pts.concat(satin(SC));if(TC.some(v=>v)){const m=(X,Y)=>{const gx=X/cell|0,gy=Y/cell|0;return X>=0&&Y>=0&&gx<gw&&gy<gh&&TC[gy*gw+gx]===1};
+if($('underlay').checked)pts=pts.concat(fill(m,ang+P.underlayAngle,P.underlaySpacing,P.underlayLen,2,-.3));pts=pts.concat(fill(m,ang,P.spacing,P.stitchLen,P.stagger,P.pullComp))}}
+if(T==='run'||T==='mix')g.ks.forEach(k=>pts=pts.concat(outline(lab,gw,gh,k,cell)));return pts}
+function rebuild(){const{lab,gw,gh,cell,cs,px,bg,col}=S,at=(X,Y)=>{const gx=X/cell|0,gy=Y/cell|0;return gx<0||gy<0||gx>=gw||gy>=gh?-1:gy*gw+gx},lum=i=>(.299*px[i][0]+.587*px[i][1]+.114*px[i][2])/255,grp={};
+cs.forEach((c,k)=>{if(k===bg)return;const h=col[k][1];(grp[h]=grp[h]||{ks:[],name:col[k][0],color:h}).ks.push(k)});
+const lu=g=>g.ks.reduce((a,k)=>a+cs[k][0]+cs[k][1]+cs[k][2],0)/g.ks.length,G=Object.values(grp).sort((a,b)=>lu(b)-lu(a));
+const add=(g,pts,st)=>{pts.forEach((p,i)=>{if(i>0&&p.j&&Math.hypot(p.x-pts[i-1].x,p.y-pts[i-1].y)<=P.noTrim)p.j=false});pts.length&&blocks.push({color:g.color,name:g.name,pts,ks:g.ks,st})};blocks=[];
+if($('portrait').checked){G.reverse();G.slice(0,Math.max(1,Math.ceil(G.length/2))).forEach((g,n)=>{const h=P.hatch*(1+n*.6),m=(X,Y)=>{const i=at(X,Y);return i>=0&&g.ks.includes(lab[i])};
+add(g,[...fill(m,45,h,P.stitchLen,P.stagger,0),...(n===0?fill((X,Y)=>{const i=at(X,Y);return i>=0&&g.ks.includes(lab[i])&&lum(i)<.25},-45,h*1.3,P.stitchLen,P.stagger,0):[])],{type:'portrait',angle:45})})}
+else G.forEach(g=>{const st=STY[g.color]||(STY[g.color]={type:$('ptype').value,angle:P.angle});add(g,stitchGroup(g,st),st)});
+draw();info();threads();mount();if(v3d.on)build3d()}
 function draw(){if($('relief').checked)return relief();const cv=$('cv'),{W,H}=dims,k=800/W;cv.width=800;cv.height=Math.round(H*k);const x=cv.getContext('2d');x.fillStyle=getComputedStyle(document.body).colorScheme==='dark'?'#d9d4c7':'#e4dfd2';x.fillStyle='#d9d4c7';x.fillRect(0,0,cv.width,cv.height);x.lineCap='round';
 const pass=(w,off,fn)=>blocks.forEach(b=>{x.lineWidth=w;x.strokeStyle=fn(b);x.beginPath();b.pts.forEach((p,i)=>{const X=p.x*k+off,Y=p.y*k+off;(i===0||p.j)?x.moveTo(X,Y):x.lineTo(X,Y)});x.stroke()});
 pass(2.6,1.2,()=>'rgba(0,0,0,.28)');pass(2,0,b=>b.color);pass(.7,-.4,()=>'rgba(255,255,255,.28)')}
 function info(){let n=0,t=0;blocks.forEach(b=>b.pts.forEach((p,i)=>{if(p.j){if(i>0)t++}else n++}));const m=n/P.speed+(blocks.length-1)*1+t*5/60,h=Math.floor(m/60),mm=Math.round(m%60);
 $('info').textContent=`${n} points · ${blocks.length} couleurs · ${t} coupes de fil · ${dims.W.toFixed(0)} × ${dims.H.toFixed(0)} mm · durée estimée ${h?h+' h ':''}${mm} min (à ${P.speed} points/min, 1 min par changement de couleur, 5 s par coupe)`}
-function threads(){$('thr').innerHTML='';blocks.forEach((b,i)=>{const d=document.createElement('div');d.className='thr';d.innerHTML=`<b style="background:${b.color}"></b>Aiguille ${i+1} · ${b.name} <input type="color" value="${b.color}">`;d.querySelector('input').oninput=e=>{b.color=e.target.value;b.name='personnalisée';d.querySelector('b').style.background=b.color;draw()};$('thr').append(d)})}
+function threads(){$('thr').innerHTML='';const TY=[['tatami','Tatami'],['satin','Satin'],['auto','Auto'],['run','Point droit'],['mix','Tatami + contour']];
+blocks.forEach((b,i)=>{const d=document.createElement('div');d.className='thr';d.id='thr'+i;
+const sel=PAL.map((t,k)=>`<option value="${k}"${t[1]===b.color?' selected':''}>${t[0]}</option>`).join(''),por=b.st.type==='portrait';
+d.innerHTML=`<b style="background:${b.color}"></b>Aiguille ${i+1}/15 <select class="c">${sel}</select><input type="color" value="${b.color}">`+(por?'':`<select class="t">${TY.map(t=>`<option value="${t[0]}"${t[0]===b.st.type?' selected':''}>${t[1]}</option>`).join('')}</select><input type="number" class="a" min="0" max="180" value="${b.st.angle}" title="Angle">`);
+const setCol=(nm,hx)=>{const o=b.color;b.ks.forEach(k=>S.col[k]=[nm,hx]);if(STY[o]&&!STY[hx])STY[hx]=STY[o];rebuild()};
+d.querySelector('.c').onchange=e=>{const t=PAL[+e.target.value];t&&setCol(t[0],t[1])};
+d.querySelector('input[type=color]').oninput=e=>{b.color=e.target.value;d.querySelector('b').style.background=b.color;draw();if(v3d.on)build3d()};
+d.querySelector('input[type=color]').onchange=e=>setCol('personnalisée',e.target.value);
+if(!por){d.querySelector('.t').onchange=e=>{b.st.type=e.target.value;rebuild()};d.querySelector('.a').onchange=e=>{b.st.angle=+e.target.value;rebuild()}}
+$('thr').append(d)})}
 function mount(){const F=FAB[$('fab').value],S=STB[$('stab').value],st=['jersey','polo','polaire','eponge'].includes($('fab').value);
 $('mnt').textContent=`Aiguille : ${F.nd}\nStabilisateur : ${S.t}\n\n- Posez le stabilisateur au dos du tissu (le plus grand que le cadre).\n- Tendez dans le cadre sans étirer : le tissu doit rester à plat, fil droit parallèle au bord.${st?'\n- Tissu extensible : ne tirez surtout pas, préférez le découpable.':''}\n${$('stab').value==='hydro'?'- Posez le film hydrosoluble sur le dessus, non tendu.\n':''}- Centrez le motif sur le repère du cadre (point 0,0 au centre).\n- Vitesse conseillée : 600–700 points/min pour les premiers essais.`}
 function bytes(a){return new Uint8Array(a)}
@@ -141,5 +170,33 @@ x.lineWidth=3.2;x.strokeStyle='rgba(0,0,0,.3)';segs.forEach(s=>{x.beginPath();x.
 segs.forEach(s=>{const a=Math.atan2(s[3]-s[1],s[2]-s[0]),c=Math.abs(Math.cos(a-L));x.lineWidth=2.6;x.strokeStyle=sh(s[4],.65+.5*c);x.beginPath();x.moveTo(s[0],s[1]);x.lineTo(s[2],s[3]);x.stroke();x.lineWidth=.8;x.strokeStyle='rgba(255,255,255,'+(.12+.22*c)+')';x.beginPath();x.moveTo(s[0]-.5,s[1]-.5);x.lineTo(s[2]-.5,s[3]-.5);x.stroke()})}
 $('relief').onchange=$('lt').oninput=()=>blocks.length&&draw();
 $('tilt').oninput=e=>{$('cv').style.transformOrigin='center top';$('cv').style.transform='perspective(1100px) rotateX('+e.target.value+'deg)'};
-$('txtgo').onclick=()=>{const t=$('txt').value.trim();if(!t)return;const c=document.createElement('canvas'),x=c.getContext('2d'),f='bold 200px '+$('fnt').value;x.font=f;c.width=Math.ceil(x.measureText(t).width)+60;c.height=300;x.fillStyle='#fff';x.fillRect(0,0,c.width,300);x.fillStyle='#000';x.font=f;x.textBaseline='middle';x.fillText(t,30,150);const i=new Image();i.onload=()=>{img=i;$('mode').value='nb';$('ptype').value='satin';$('portrait').checked=false;gen()};i.src=c.toDataURL()};
+$('txtgo').onclick=()=>{const t=$('txt').value.trim();if(!t)return;const c=document.createElement('canvas'),x=c.getContext('2d'),f='bold 200px '+$('fnt').value;x.font=f;c.width=Math.ceil(x.measureText(t).width)+60;c.height=300;x.fillStyle='#fff';x.fillRect(0,0,c.width,300);x.fillStyle='#000';x.font=f;x.textBaseline='middle';x.fillText(t,30,150);const i=new Image();i.onload=()=>{img=i;TM=null;$('mode').value='nb';$('ptype').value='satin';$('portrait').checked=false;gen()};i.src=c.toDataURL()};
+
+function t10o(){const o=[0x8a,0,0],{W,H}=dims;let cx=0,cy=0;
+const rec=(c,dx,dy)=>o.push(0x80|c|(dx<0?0x40:0)|(dy<0?0x20:0),Math.abs(dx),Math.abs(dy));
+const mv=(tx,ty,c)=>{while(tx!==cx||ty!==cy){const dx=Math.max(-127,Math.min(127,tx-cx)),dy=Math.max(-127,Math.min(127,ty-cy));rec(c,dx,dy);cx+=dx;cy+=dy}};
+blocks.forEach((b,i)=>{if(i>0)rec(5,0,0);b.pts.forEach((p,j)=>mv(Math.round((p.x-W/2)*10),-Math.round((p.y-H/2)*10),(p.j||j===0)?0x10:0))});
+while((o.length+3)%512)o.push(0x90,0,0);o.push(0x87,0,0);return bytes(o)}
+$('x10o').onclick=()=>blocks.length?save(t10o(),'broderie.10o'):alert('Importez d’abord une image.');
+const v3d={on:false};
+function load3d(cb){if(window.THREE)return cb();const e=document.createElement('script');e.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';e.onload=cb;e.onerror=()=>{$('v3dbox').checked=false;alert('Impossible de charger three.js : vérifiez votre connexion internet.')};document.head.append(e)}
+function build3d(){const T=THREE,box=$('v3d');
+if(!v3d.r){v3d.r=new T.WebGLRenderer({antialias:true});v3d.r.setSize(800,560);box.append(v3d.r.domElement);v3d.cam=new T.PerspectiveCamera(40,800/560,1,2000);v3d.sc=new T.Scene();v3d.sc.background=new T.Color(0xd9d4c7);v3d.sc.add(new T.AmbientLight(0xffffff,.55));const dl=new T.DirectionalLight(0xffffff,.9);dl.position.set(-80,120,100);v3d.sc.add(dl);v3d.rx=-.9;v3d.rz=0;v3d.dist=170;
+ const c=v3d.r.domElement;let dn=0,lx=0,ly=0;c.onpointerdown=e=>{dn=1;lx=e.clientX;ly=e.clientY;c.setPointerCapture(e.pointerId)};c.onpointerup=()=>dn=0;c.onpointermove=e=>{if(!dn)return;v3d.rz+=(e.clientX-lx)*.01;v3d.rx=Math.max(-1.5,Math.min(0,v3d.rx+(e.clientY-ly)*.01));lx=e.clientX;ly=e.clientY};c.onwheel=e=>{e.preventDefault();v3d.dist=Math.max(40,Math.min(500,v3d.dist+e.deltaY*.2))};
+ const loop=()=>{requestAnimationFrame(loop);if(!v3d.on)return;if($('auto').checked)v3d.rz+=.006;if(v3d.grp){v3d.grp.rotation.x=v3d.rx;v3d.grp.rotation.z=v3d.rz}v3d.cam.position.set(0,0,v3d.dist);v3d.r.render(v3d.sc,v3d.cam)};loop()}
+if(v3d.grp)v3d.sc.remove(v3d.grp);const{W,H}=dims,g=new T.Group(),segs=[];blocks.forEach(b=>b.pts.forEach((p,i)=>{if(i&&!p.j)segs.push([b.pts[i-1],p,b.color])}));
+const m=new T.InstancedMesh(new T.BoxGeometry(1,.45,.5),new T.MeshStandardMaterial({roughness:.35,metalness:.1}),Math.max(1,segs.length)),dm=new T.Object3D(),col=new T.Color();
+segs.forEach((s,i)=>{const a=s[0],b=s[1];dm.position.set((a.x+b.x)/2-W/2,-((a.y+b.y)/2-H/2),(i%3)*.12);dm.rotation.set(0,0,Math.atan2(-(b.y-a.y),b.x-a.x));dm.scale.set(Math.hypot(b.x-a.x,b.y-a.y)+.25,1,1);dm.updateMatrix();m.setMatrixAt(i,dm.matrix);m.setColorAt(i,col.set(s[2]))});
+if(m.instanceColor)m.instanceColor.needsUpdate=true;g.add(m);const base=new T.Mesh(new T.PlaneGeometry(W+20,H+20),new T.MeshStandardMaterial({color:0xe4dfd2,roughness:1}));base.position.z=-.4;g.add(base);v3d.grp=g;v3d.sc.add(g)}
+$('v3dbox').onchange=e=>{if(e.target.checked)load3d(()=>{v3d.on=true;$('v3d').style.display='block';$('cv').style.display='none';if(blocks.length)build3d()});else{v3d.on=false;$('v3d').style.display='none';$('cv').style.display='block'}};
+
+$('ptype').addEventListener('change',()=>{for(const k in STY)delete STY[k]});
+$('cv').onclick=e=>{if(!S)return;const r=e.target.getBoundingClientRect(),gx=Math.floor((e.clientX-r.left)/r.width*S.gw),gy=Math.floor((e.clientY-r.top)/r.height*S.gh);if(gx<0||gy<0||gx>=S.gw||gy>=S.gh)return;const k=S.lab[gy*S.gw+gx],j=blocks.findIndex(b=>b.ks.includes(k));document.querySelectorAll('.thr').forEach(t=>t.classList.remove('sel'));if(j>=0){const t=$('thr'+j);t.classList.add('sel');t.scrollIntoView({block:'nearest',behavior:'smooth'})}};
+async function ocr(){if(!img||!S)return $('ocrst').textContent='Importez d’abord une image.';const st=t=>$('ocrst').textContent=t;st('Chargement de la reconnaissance…');
+try{if(!window.Tesseract)await new Promise((ok,ko)=>{const e=document.createElement('script');e.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';e.onload=ok;e.onerror=ko;document.head.append(e)});
+const sc=Math.min(1,1600/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+const w=await Tesseract.createWorker('fra+eng'),r=await w.recognize(c);await w.terminate();const tm=new Uint8Array(S.gw*S.gh),kx=S.gw/c.width,ky=S.gh/c.height;let n=0;
+for(const q of r.data.words||[]){if(q.confidence<60)continue;n++;const b=q.bbox;for(let y=Math.floor(b.y0*ky);y<=Math.min(S.gh-1,Math.ceil(b.y1*ky));y++)for(let xx=Math.floor(b.x0*kx);xx<=Math.min(S.gw-1,Math.ceil(b.x1*kx));xx++)tm[y*S.gw+xx]=1}
+TM=tm;S.tm=tm;st(n+' mot(s) reconnu(s) : brodés en satin');rebuild()}catch(e){st('Reconnaissance impossible (connexion internet requise).')}}
+$('ocr').onclick=ocr;
 </script></body></html>
