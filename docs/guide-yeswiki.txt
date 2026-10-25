@@ -18,13 +18,13 @@ Ce guide s'adresse à des personnes qui n'ont aucune habitude de l'informatique.
 
 =====2. Récupérer le projet depuis votre GitHub=====
 
-   1) Ouvrez votre navigateur et allez sur ""https://github.com/mikeDTA/atelier-broderie"".
+   1) Ouvrez votre navigateur et allez sur ""https://github.com/mikeDTA/broderieIA"".
    1) Cliquez sur le bouton vert **Code**.
    1) Cliquez sur **Download ZIP** : un fichier se télécharge, souvent dans le dossier Téléchargements.
    1) Faites un clic droit sur ce fichier, puis **Extraire tout** (Windows) ou double-cliquez dessus (Mac).
    1) Dans le dossier obtenu, double-cliquez sur ""index.html"" : l'application s'ouvre dans votre navigateur. Aucune installation n'est nécessaire.
 
-Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/mikeDTA/atelier-broderie.git"".
+Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/mikeDTA/broderieIA.git"".
 
 =====3. Installer le projet sur GitHub=====
 
@@ -34,7 +34,7 @@ Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/mikeD
 
 ====Créer le dépôt====
    1) Cliquez sur le **+** en haut à droite, puis **New repository**.
-   1) Dans **Repository name**, tapez ""atelier-broderie"".
+   1) Dans **Repository name**, tapez ""broderieIA"".
    1) Cochez **Public** (obligatoire pour la mise en ligne gratuite).
    1) Cliquez sur **Create repository**.
 
@@ -49,7 +49,7 @@ Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/mikeD
    1) Cliquez sur l'onglet **Settings** du dépôt, puis **Pages** dans le menu de gauche.
    1) Sous **Build and deployment**, choisissez **Deploy from a branch**.
    1) Pour **Branch**, choisissez ""main"" et ""/ (root)"", puis **Save**.
-   1) Patientez une à deux minutes et rafraîchissez : l'adresse ""https://mikeDTA.github.io/atelier-broderie/"" apparaît en haut.
+   1) Patientez une à deux minutes et rafraîchissez : l'adresse ""https://mikeDTA.github.io/broderieIA/"" apparaît en haut.
 
 ====Modifier plus tard====
 Refaites **Add file > Upload files** avec un fichier du même nom : il remplace l'ancien.
@@ -137,6 +137,7 @@ Choisissez-les dans **Type de point** (menu de gauche).
    * **Remplissage tatami** : rangées de points décalés qui couvrent une surface. Réglages : espacement des rangs, longueur de point, angle, décalage, compensation, sous-couche. Équivalents Ink/Stitch : ""row_spacing_mm"", ""max_stitch_length_mm"", ""angle"", ""staggers"", ""pull_compensation_mm"", ""fill_underlay"".
    * **Satin le long des tracés** : le logiciel trouve la ligne centrale de chaque forme étroite et pose des points en travers, de bord à bord, comme un vrai satin. Réglages : espacement satin, longueur max satin, compensation de tirage. Il convient aux traits de moins de 6 mm de large.
    * **Auto** : satin sur les tracés fins, tatami sur les surfaces larges, dans la même couleur.
+   * **Zigzag le long des tracés** : un zigzag de largeur fixe suit la ligne centrale de la forme. Il convient aux traits fins, aux broderies légères et aux contours décoratifs. Réglages : espacement des pointes et largeur (partie 28).
    * **Point droit (contours)** : une ligne de points qui suit le bord des zones. Réglage : longueur du point droit. Équivalent Ink/Stitch : ""running_stitch_length_mm"".
    * **Tatami + contour** : remplissage puis ligne de contour par-dessus, qui rend les bords plus nets.
 
@@ -267,7 +268,7 @@ Si le message dit que la reconnaissance est impossible, vérifiez votre connexio
    1) Cochez **Vue 3D tournante (three.js)** dans la zone **Affichage**. Une connexion internet est nécessaire la première fois, car la bibliothèque three.js est chargée depuis cdnjs.
    1) Maintenez le clic et glissez pour faire tourner et pencher la broderie. La molette zoome.
    1) Décochez **Rotation automatique** pour arrêter le tour continu.
-   1) Si la vue ne s'affiche pas, décochez la case, vérifiez votre connexion, puis recommencez.
+   1) Pour profiter de la carte graphique, voir la partie 30. Si la vue ne s'affiche pas, décochez la case, vérifiez votre connexion, puis recommencez.
 
 Chaque point est un petit bloc éclairé, avec la couleur du fil choisi pour l'aiguille.
 
@@ -346,8 +347,8 @@ docker compose version
 ====Étape 3 : récupérer le projet====
 %%
 cd ~
-git clone https://github.com/mikeDTA/atelier-broderie.git
-cd atelier-broderie
+git clone https://github.com/mikeDTA/broderieIA.git
+cd broderieIA
 ls
 %%
 La liste doit contenir ""Dockerfile"", ""docker-compose.yml"", ""nginx.conf"", ""index.html"" et ""docs"". Sans Git, téléchargez le ZIP depuis GitHub (partie 2), décompressez-le et placez-vous dans le dossier avec la commande ""cd"".
@@ -426,10 +427,75 @@ sudo certbot --nginx -d votre-domaine.fr
 
 Attention : la vue 3D et la reconnaissance d'écriture chargent des bibliothèques depuis internet. Un serveur sans accès à internet ne peut pas les utiliser, et rien d'autre n'est affecté.
 
-=====27. Ce qui n'est pas encore disponible=====
+=====27. Les réglages de chaque aiguille (15 couleurs)=====
+
+Chaque couleur de fil, donc chaque aiguille, peut avoir ses propres réglages de points.
+
+   1) Dans la liste **Fils**, repérez la ligne de l'aiguille voulue. Elle contient le style (tatami, satin, zigzag…), l'angle et un bouton **⚙**.
+   1) Cliquez sur **⚙** : une fenêtre s'ouvre avec les réglages de points de cette aiguille uniquement, rangés par famille.
+   1) Déplacez un curseur, tapez une valeur ou choisissez dans un menu : seule cette aiguille change. Le motif se recalcule après un court instant.
+   1) **Réinitialiser** remet l'aiguille sur les réglages généraux. **Copier vers toutes les aiguilles** applique ses réglages aux 15 couleurs. **Fermer** ferme la fenêtre.
+
+{{attach file="15-reglages-aiguille.png" desc="Réglages de l'aiguille 1"}}
+
+Les réglages généraux (largeur, nombre de couleurs, vitesse, simplification) restent communs à toutes les aiguilles. Les réglages d'une aiguille sont conservés tant que sa couleur de fil ne change pas.
+
+=====28. Zigzag, sous-couches et méthodes de remplissage=====
+
+====Le point zigzag====
+Choisissez **Zigzag le long des tracés** dans **Type de point** (ou dans la ligne d'une aiguille). Réglez dans « Tous les réglages » ou dans **⚙** : l'**espacement des pointes** (0,2 à 3 mm) et la **largeur du zigzag** (0,5 à 8 mm).
+
+{{attach file="16-zigzag.png" desc="Texte en zigzag"}}
+
+====Les sous-couches du satin====
+La sous-couche est une trame posée sous le satin pour le soutenir. Le réglage **Sous-couche du satin** propose :
+   * **Aucune** ;
+   * **Contour** : une ligne de points suit le bord de la forme, à l'intérieur. Réglages : retrait (0 à 2 mm) et longueur de point (1 à 4 mm) ;
+   * **Zigzag** : un zigzag espacé couvre la largeur. Réglages : espacement (1 à 6 mm) et retrait (0 à 2 mm) ;
+   * **Contour + zigzag** : les deux.
+
+Le **passage central** (partie 7) s'ajoute à ces choix.
+
+====Les méthodes de remplissage====
+Le réglage **Méthode de remplissage** change la façon dont une surface est couverte :
+   * **Rangées (tatami)** : des lignes parallèles, la méthode habituelle.
+   * **Contours concentriques** : des anneaux qui suivent le bord et se resserrent vers le centre.
+   * **Cercles** : des cercles autour du centre de la zone.
+   * **Méandre ondulé** : des rangées ondulées. Réglez l'**amplitude** (0,2 à 5 mm) et la **longueur d'onde** (4 à 40 mm).
+
+{{attach file="17-contours-concentriques.png" desc="Contours concentriques"}}
+
+{{attach file="18-cercles.png" desc="Cercles"}}
+
+{{attach file="19-meandre.png" desc="Méandre ondulé"}}
+
+Les remplissages en contours et en cercles sont plus décoratifs que les rangées : essayez-les sur une chute avant de broder, car ils donnent plus de coupes de fil.
+
+=====29. Départ, arrivée et points d'arrêt=====
+
+Dans « Tous les réglages » ou dans **⚙**, la famille **Départ, arrivée, arrêts** contient :
+   * **Point de départ** : Automatique, ou un coin de la broderie (haut gauche, haut droite, bas gauche, bas droite) ou le centre. L'aiguille commence près de ce point et enchaîne ses zones en limitant les sauts.
+   * **Point d'arrivée** : même choix. La dernière zone brodée par cette aiguille est celle qui est la plus proche de ce point, utile pour finir près de l'endroit où l'on changera de fil.
+   * **Points d'arrêt** : Oui ajoute trois petits points avant et après chaque zone, qui fixent le fil quand la machine ne le fait pas elle-même.
+
+=====30. La carte graphique et le rendu 3D=====
+
+La vue 3D utilise la carte graphique (WebGL) pour afficher chaque fil en relief, avec ombres et éclairage.
+
+   1) Cochez **Vue 3D tournante**, puis laissez **Haute qualité (ombres, carte graphique)** cochée.
+   1) Sous la case, la ligne **Carte graphique** donne le nom de la carte utilisée.
+   1) Si ce nom contient « SwiftShader », « llvmpipe » ou « software », le navigateur n'utilise pas votre carte : l'affichage sera lent. Activez l'accélération matérielle :
+   - Chrome : menu (trois points), **Paramètres**, **Système**, **Utiliser l'accélération matérielle lorsqu'elle est disponible**, puis relancez ;
+   - Firefox : **Paramètres**, **Général**, **Performances**, décochez les paramètres recommandés, cochez **Utiliser l'accélération matérielle lorsque disponible**, puis relancez ;
+   - Kubuntu : ouvrez **Configuration du système**, puis **Pilotes supplémentaires** (ou « Driver Manager ») pour installer le pilote de votre carte NVIDIA ou AMD.
+   1) Si l'écran saccade encore, décochez **Haute qualité** : les ombres sont désactivées et le rendu s'allège.
+
+Les chaînes de menus peuvent varier selon la version de votre navigateur.
+
+=====31. Ce qui n'est pas encore disponible=====
 
    * Export EOF, palette Madeira intégrée (à importer vous-même).
-   * Réglages d'Ink/Stitch pas encore intégrés : zigzag, sous-couches de contour et en zigzag, retrait des points courts, méthodes de remplissage (spirale, méandre, guidé, circulaire), points de départ et d'arrivée, arrêt ou coupe après un objet, colonnes de satin à rails, polices de lettrage Ink/Stitch.
+   * Réglages d'Ink/Stitch pas encore intégrés : remplissage guidé par une ligne, polices de lettrage Ink/Stitch, colonnes de satin à rails, arrêt ou coupe après un objet, retrait des points courts, sous-couche en zigzag pour le tatami.
    * Le satin n'est pas encore soigné aux jonctions entre traits, et la reconnaissance d'écriture n'a pas pu être contrôlée avant livraison : elle dépend d'un chargement depuis internet.
    * Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
    * Le schéma de montage est un texte, pas encore un dessin.
