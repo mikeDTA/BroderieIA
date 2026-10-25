@@ -120,7 +120,8 @@ Les cases du menu de gauche : **Ignorer le fond** (ne brode pas la couleur domin
 Choisissez-les dans **Type de point** (menu de gauche).
 
    * **Remplissage tatami** : rangées de points décalés qui couvrent une surface. Réglages : espacement des rangs, longueur de point, angle, décalage, compensation, sous-couche. Équivalents Ink/Stitch : ""row_spacing_mm"", ""max_stitch_length_mm"", ""angle"", ""staggers"", ""pull_compensation_mm"", ""fill_underlay"".
-   * **Satin (approximatif)** : longs points rapprochés qui donnent un aspect brillant, adapté aux formes étroites. Réglages : espacement et longueur max. Ce n'est pas encore un vrai satin le long d'un axe : ne l'utilisez que sur des formes de moins de 12 mm de large.
+   * **Satin le long des tracés** : le logiciel trouve la ligne centrale de chaque forme étroite et pose des points en travers, de bord à bord, comme un vrai satin. Réglages : espacement satin, longueur max satin, compensation de tirage. Il convient aux traits de moins de 6 mm de large.
+   * **Auto** : satin sur les tracés fins, tatami sur les surfaces larges, dans la même couleur.
    * **Point droit (contours)** : une ligne de points qui suit le bord des zones. Réglage : longueur du point droit. Équivalent Ink/Stitch : ""running_stitch_length_mm"".
    * **Tatami + contour** : remplissage puis ligne de contour par-dessus, qui rend les bords plus nets.
 
@@ -182,12 +183,12 @@ Je n'ai pas inclus la palette Madeira dans le projet : ses données de couleur n
 
    1) Dans la zone **Texte** à gauche, tapez votre texte, par exemple un prénom.
    1) Choisissez une **Police** : sans empattement, avec empattement, machine à écrire ou écriture manuscrite. Ces polices sont celles de votre ordinateur, elles peuvent donc varier d'un appareil à l'autre.
-   1) Cliquez sur **Broder ce texte**. L'application passe seule en noir et blanc avec le point satin approché.
+   1) Cliquez sur **Broder ce texte**. L'application passe seule en noir et blanc avec le point satin le long des tracés.
    1) Changez la couleur du fil dans la liste **Fils** si vous voulez une autre teinte.
 
 {{attach file="09-texte.png" desc="Texte brodé"}}
 
-Le texte est transformé en image puis brodé : l'application ne reconnaît pas l'écriture d'une photo. Les petites lettres (moins de 8 mm de haut) ne sont pas recommandées, et le nombre de coupes de fil est élevé tant que le vrai satin n'est pas disponible.
+Le texte est transformé en image puis brodé : l'application ne reconnaît pas l'écriture d'une photo. Les petites lettres (moins de 8 mm de haut) ne sont pas recommandées.
 
 =====17. Le rendu relief 3D=====
 
@@ -202,7 +203,7 @@ C'est un rendu simulé en deux dimensions avec ombres et reflets, pas un modèle
 =====18. Brodeuse à 15 aiguilles=====
 
    1) Le **Nombre de couleurs** va jusqu'à 15, soit une couleur par aiguille.
-   1) Sous l'aperçu, la liste **Fils** a une ligne par aiguille, de « Aiguille 1/15 » à « Aiguille 15/15 ». L'ordre suit l'ordre de broderie : la première couleur brodée est l'aiguille 1.
+   1) Sous l'aperçu, la liste **Fils** a une ligne par couleur de fil, donc par aiguille : deux zones de même couleur sont regroupées sur la même aiguille, ce qui évite des changements de fil inutiles. La liste a une ligne par aiguille, de « Aiguille 1/15 » à « Aiguille 15/15 ». L'ordre suit l'ordre de broderie : la première couleur brodée est l'aiguille 1.
    1) Dans chaque ligne, ouvrez le menu déroulant pour choisir un fil de la palette, ou cliquez sur la case de couleur pour une teinte libre.
    1) L'aperçu change tout de suite. Les fils de la palette importée (Madeira) apparaissent dans ces menus.
 
@@ -210,7 +211,33 @@ C'est un rendu simulé en deux dimensions avec ombres et reflets, pas un modèle
 
 Les fichiers ne contiennent pas le numéro d'aiguille : après le chargement, vérifiez sur la machine que chaque couleur est bien associée à l'aiguille voulue.
 
-=====19. La vue 3D tournante=====
+=====19. Un style de point par couleur=====
+
+   1) Cliquez sur une zone de l'image : la ligne du fil correspondant s'entoure en orange dans la liste **Fils**.
+   1) Dans cette ligne, à droite de la case de couleur, le menu choisit le **style de point** : Tatami, Satin, Auto, Point droit ou Tatami + contour.
+   1) La petite case numérique à droite règle l'**angle** des points de cette couleur seulement.
+   1) L'aperçu, le nombre de points et la durée sont recalculés tout de suite.
+
+{{attach file="12-style-couleur.png" desc="Style de point choisi par couleur"}}
+
+Le menu **Type de point** à gauche donne le style par défaut : le changer remet toutes les couleurs sur ce style.
+
+Si vous donnez à une zone la même couleur de fil qu'une autre, elles sont fusionnées sur la même aiguille.
+
+=====20. Le vrai satin et la reconnaissance d'écriture=====
+
+Le satin est calculé le long de la ligne centrale des formes étroites. Il rend bien les lettres et les traits réguliers, et les jonctions entre traits (milieu d'un « a », liaison d'un « m ») peuvent montrer des points qui se croisent : vérifiez l'aperçu en **rendu relief**.
+
+{{attach file="13-satin.png" desc="Texte en satin"}}
+
+Pour broder automatiquement l'écriture d'une image en satin :
+   1) Importez l'image qui contient du texte.
+   1) Cliquez sur **Détecter l'écriture (OCR)**. Une connexion internet est nécessaire, car la bibliothèque de reconnaissance est chargée à ce moment.
+   1) Le message sous le bouton indique le nombre de mots reconnus. Les zones de texte sont brodées en satin, le reste garde son style.
+
+Si le message dit que la reconnaissance est impossible, vérifiez votre connexion et recommencez. À défaut, choisissez le style **Auto** : les tracés fins sont brodés en satin sans reconnaissance.
+
+=====21. La vue 3D tournante=====
 
    1) Cochez **Vue 3D tournante (three.js)** dans la zone **Affichage**. Une connexion internet est nécessaire la première fois, car la bibliothèque three.js est chargée depuis cdnjs.
    1) Maintenez le clic et glissez pour faire tourner et pencher la broderie. La molette zoome.
@@ -219,15 +246,16 @@ Les fichiers ne contiennent pas le numéro d'aiguille : après le chargement, v�
 
 Chaque point est un petit bloc éclairé, avec la couleur du fil choisi pour l'aiguille.
 
-=====20. Les formats d'export=====
+=====22. Les formats d'export=====
 
    * **DST** : format Tajima, le plus répandu. Il contient les points, les sauts et les changements de couleur.
    * **10O (Toyota)** : écrit d'après la structure d'un fichier 10O réel. Il contient les points, les sauts et les changements de couleur, sur des blocs de 512 octets. Le fichier de couleurs séparé ("".00o"") n'est pas généré : utilisez l'EDR ou réglez les fils sur la machine. Ce format n'a pas été essayé sur une brodeuse : faites un test sur une chute.
    * **EDR** : la liste des couleurs de fils.
    * **EOF** : c'est le fichier de projet vectoriel d'Embird Studio, sans description publique. Il n'est pas disponible. Ouvrez le DST dans Embird pour continuer à le modifier.
 
-=====21. Ce qui n'est pas encore disponible=====
+=====23. Ce qui n'est pas encore disponible=====
 
-   * Export EOF, vrai satin le long d'un axe, reconnaissance d'écriture sur photo, palette Madeira intégrée (à importer vous-même).
+   * Export EOF, palette Madeira intégrée (à importer vous-même).
+   * Le satin n'est pas encore soigné aux jonctions entre traits, et la reconnaissance d'écriture n'a pas pu être contrôlée avant livraison : elle dépend d'un chargement depuis internet.
    * Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
    * Le schéma de montage est un texte, pas encore un dessin.
