@@ -15,5 +15,5 @@ Importez une image, choisissez tissu et stabilisateur (l'espacement et le tirage
 Cochez **Portrait** pour un rendu hachuré façon dessin, avec option noir et blanc.
 
 ## État actuel
-Fonctionnel : import de tout format d'image, conversion couleur / niveaux de gris / noir et blanc, simplification des zones (moins de coupes de fil), types de point (tatami, satin approché, point droit, contours), sous-couche, portrait, import de palette de fils (.gpl ou CSV), nombre de points et durée estimée, exports DST et EDR, aperçu ombré, guide en PDF / Markdown / YesWiki dans `docs/`.
-À venir : format Toyota 100/10O, vrai satin, texte, rendu 3D réel, réglages Ink/Stitch restants.
+Fonctionnel : import de tout format d'image, conversion couleur / niveaux de gris / noir et blanc, simplification des zones (moins de coupes de fil), types de point (tatami, satin approché, point droit, contours), sous-couche, portrait, import de palette de fils (.gpl ou CSV), nombre de points et durée estimée, texte brodé, rendu relief avec lumière et inclinaison, exports DST et EDR, guide en PDF / Markdown / YesWiki dans `docs/`.
+À venir : format Toyota 100/10O, vrai satin, reconnaissance d'écriture, rendu 3D tournant, réglages Ink/Stitch restants.
