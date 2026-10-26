@@ -4,6 +4,47 @@
 
 Ce guide s'adresse à des personnes qui n'ont aucune habitude de l'informatique. Chaque étape dit exactement sur quoi cliquer. Les captures d'écran montrent l'application avec une image d'exemple (formes colorées).
 
+## Sommaire
+
+- 1. Avant de commencer
+- 2. Récupérer le projet depuis votre GitHub
+- 3. Installer le projet sur GitHub
+- 4. Démarrage rapide
+- 5. Comprendre ce qui s'affiche
+- 6. Les réglages rapides
+- 7. Tous les réglages
+- 8. Les types de point
+- 9. Couleur, niveaux de gris, noir et blanc
+- 10. Le mode portrait
+- 11. Ajouter des contours
+- 12. La palette de fils Madeira
+- 13. Réduire les coupes de fil sans perdre en qualité
+- 14. Tissus, stabilisateurs et aiguilles
+- 15. Si quelque chose ne va pas
+- 16. Broder du texte
+- 17. Le rendu relief 3D
+- 18. Brodeuse à 15 aiguilles
+- 19. Un style de point par couleur
+- 20. Le vrai satin et la reconnaissance d'écriture
+- 21. La vue 3D tournante
+- 22. Les formats d'export
+- 24. Faire correspondre les couleurs de l'image et du fil
+- 25. Ajouter un texte sur l'image brodée
+- 26. Mettre l'application sur un serveur (Kubuntu, Docker)
+- 27. Les réglages de chaque aiguille (15 couleurs)
+- 28. Zigzag, sous-couches et méthodes de remplissage
+- 29. Départ, arrivée et points d'arrêt
+- 30. La carte graphique et le rendu 3D
+- 31. Optimisation automatique des réglages selon le style
+- 32. Autres réglages d'Ink/Stitch
+- 33. Importer une police pour le texte
+- 34. La colonne de satin à rails
+- 35. Le remplissage guidé par une ligne
+- 36. La sous-couche en zigzag du tatami
+- 37. Se repérer : couleurs, icônes et panneaux
+- 38. Ce qui n'est pas encore disponible
+- 39. Journal des versions
+
 ## 1. Avant de commencer
 
 - **Navigateur** : le programme que vous utilisez pour aller sur internet (Chrome, Firefox, Edge, Safari).
@@ -63,7 +104,7 @@ Refaites **Add file > Upload files** avec un fichier du même nom : il remplace 
 
 ![Motif généré après l'import : l'écran se lit de gauche à droite, réglages à gauche, aperçu au centre, fils en dessous](img/02-import.png)
 
-Tout est visible sans faire défiler la page : les réglages à gauche (sur deux colonnes), l'aperçu et le montage au centre, la liste des fils en dessous. Les boutons **Réglages rapides** et **Tous les réglages** ouvrent des panneaux superposés.
+Tout est visible sans faire défiler la page : les réglages à gauche (sur deux colonnes), l'aperçu et le montage au centre, la liste des fils en dessous. Les boutons **Réglages rapides** et **Tous les réglages** ouvrent un panneau qui **remplace la colonne de gauche** : l'aperçu, le nombre de points, la durée, les fils et le montage restent visibles à droite pendant que vous réglez. **Fermer** ramène la colonne de gauche.
 
 3. Dans **Matière**, choisissez votre **Tissu** puis votre **Stabilisateur**. Le motif se recalcule : espacement des rangs et compensation de tirage changent.
 
@@ -87,7 +128,7 @@ Pour une machine Toyota, cliquez plutôt sur **10O (Toyota)** : le format est d�
 
 ## 6. Les réglages rapides
 
-Cliquez sur **Réglages rapides** : un panneau apparaît sur le quart droit de l'écran. Chaque réglage a un curseur à faire glisser et une case où taper une valeur. Cliquez sur **Fermer** pour le cacher.
+Cliquez sur **Réglages rapides** : un panneau étroit remplace la colonne de gauche, et le motif reste visible à droite. Chaque réglage a un curseur à faire glisser et une case où taper une valeur. Cliquez sur **Fermer** pour le cacher.
 
 ![Panneau des réglages rapides](img/04-rapide.png)
 
@@ -104,9 +145,9 @@ Cliquez sur **Réglages rapides** : un panneau apparaît sur le quart droit de l
 
 ## 7. Tous les réglages
 
-Cliquez sur **Tous les réglages** (en bas à gauche) : une fenêtre affiche tous les réglages en colonnes, rangés par famille, sans défilement. Cliquez sur **Fermer** pour revenir.
+Cliquez sur **Tous les réglages** (en bas à gauche) : un panneau affiche tous les réglages en quatre colonnes, rangés par famille. Le motif, les compteurs et les fils restent visibles à droite. Sur un petit écran, le bas de la liste peut défiler dans le panneau : utilisez la molette de la souris. Cliquez sur **Fermer** pour revenir.
 
-![Fenêtre Tous les réglages](img/05-avance.png)
+![Panneau Tous les réglages : le motif reste visible à droite](img/05-avance.png)
 
 En plus des réglages rapides :
 
@@ -205,6 +246,12 @@ Découpable : on découpe l'excédent autour du motif, il reste sous la broderie
 - **Trop de coupes de fil** : suivez la partie 13.
 - **Les formes se déforment dans la couture** : augmentez la compensation de tirage et vérifiez le stabilisateur.
 - **Le fichier ne s'ouvre pas sur la machine** : ouvrez-le d'abord dans Embird pour le convertir.
+- **La colonne à rails ne s'affiche pas** : chaque rail demande au moins deux points. Recommencez avec **Satin à rails**.
+- **Le remplissage guidé ne change rien** : tracez d'abord la **Ligne guide** (au moins deux points), puis **Terminer la ligne**.
+- **La police importée n'apparaît pas** : utilisez un fichier `.ttf`, `.otf` ou `.woff`.
+- **Le panneau de réglages a remplacé la colonne de gauche** : c'est voulu, pour ne rien cacher du motif. Cliquez sur **Fermer** pour retrouver le tissu, le style et les exports.
+- **Docker dit « permission denied »** : fermez votre session Kubuntu et rouvrez-la après la commande `usermod`, ou lancez les commandes précédées de `sudo`.
+- **Docker dit que le port 8080 est déjà pris** : dans `docker-compose.yml`, remplacez `"8080:80"` par `"8081:80"`, puis relancez `docker compose up -d`, et ouvrez `http://localhost:8081`.
 
 ## 16. Broder du texte
 
@@ -300,7 +347,11 @@ Utilisez un texte assez grand : sous 10 mm de haut, les lettres deviennent diffi
 
 ## 26. Mettre l'application sur un serveur (Kubuntu, Docker)
 
-L'application n'a besoin que d'un **serveur web** : pas de base de données, pas de PHP. Docker installe ce serveur (nginx) pour vous. Les captures d'écran de cette partie n'ont pas pu être faites sur Kubuntu : les commandes sont donc données en entier, à copier.
+L'application n'a besoin que d'un **serveur web** : pas de base de données, pas de PHP. Docker installe ce serveur (nginx) pour vous.
+
+![Comment le navigateur parle au conteneur](img/26-schema-docker.png)
+
+ Les captures d'écran de cette partie n'ont pas pu être faites sur Kubuntu : les commandes sont donc données en entier, à copier.
 
 ### Étape 1 : ouvrir le terminal
 1. Cliquez sur le menu en bas à gauche, ou tapez sur la touche Windows de votre clavier.
@@ -355,11 +406,11 @@ ls
 La liste doit contenir `Dockerfile`, `docker-compose.yml`, `nginx.conf`, `index.html` et `docs`. Sans Git, téléchargez le ZIP depuis GitHub (partie 2), décompressez-le et placez-vous dans le dossier avec la commande `cd`.
 
 ### Étape 4 : les fichiers Docker (déjà dans le projet)
-**Dockerfile** : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
+**Dockerfile** (version 2.2) : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
 
 ```
 FROM nginx:stable-alpine
-ARG APP_VERSION=2.0
+ARG APP_VERSION=2.2
 LABEL org.opencontainers.image.title="BroderieIA - Atelier Broderie" \
       org.opencontainers.image.version="${APP_VERSION}"
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -370,7 +421,7 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
 EXPOSE 80
 ```
 
-**docker-compose.yml** : donne le nom de la boîte (`broderieia`), sa version, son port (8080) et le redémarrage automatique.
+**docker-compose.yml** : donne le nom de la boîte (`broderieia`), sa version (2.2), son port (8080), une protection contre les élévations de droits et le redémarrage automatique.
 
 ```
 services:
@@ -378,23 +429,27 @@ services:
     build:
       context: .
       args:
-        APP_VERSION: "2.0"
-    image: broderieia:2.0
+        APP_VERSION: "2.2"
+    image: broderieia:2.2
     container_name: broderieia
     ports:
       - "8080:80"
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped
 ```
 
-**nginx.conf** : réglages du serveur web (compression, en-têtes de sécurité, mémorisation des images du guide, page principale toujours rechargée).
+**nginx.conf** : réglages du serveur web (compression, en-têtes de sécurité, version du serveur masquée, page principale toujours rechargée, images du guide mises en cache une semaine).
 
 ```
 server {
     listen 80;
     server_name _;
+    server_tokens off;
     root /usr/share/nginx/html;
     index index.html;
     gzip on;
+    add_header X-Frame-Options SAMEORIGIN;
     location = /index.html {
         add_header Cache-Control "no-cache";
     }
@@ -412,11 +467,12 @@ docker ps
 La deuxième commande doit afficher une ligne `broderieia` avec l'état « Up ». Après une trentaine de secondes, l'état devient « Up (healthy) » : le contrôle de santé confirme que le serveur répond. Ouvrez Firefox et allez sur `http://localhost:8080` : l'application apparaît, comme sur la capture de la partie 4.
 
 ### Étape 6 : l'ouvrir depuis un autre ordinateur
-1. Sur le serveur, tapez `hostname -I` : la première adresse (par exemple `192.168.1.20`) est celle du serveur.
-2. Sur l'autre ordinateur, allez sur `http://192.168.1.20:8080`.
+1. Sur le serveur, tapez `hostname -I` : la première adresse (par exemple `192.268.1.20`) est celle du serveur.
+2. Sur l'autre ordinateur, allez sur `http://192.268.1.20:8080`.
 3. Si la page ne s'ouvre pas, autorisez le port : `sudo ufw allow 8080/tcp` (le pare-feu est inactif par défaut sous Kubuntu : `sudo ufw status` le dit).
 
 ### Étape 7 : gérer le service
+- Voir la version installée : `docker images` (la ligne `broderieia` doit afficher `2.2`).
 - Voir les messages : `docker compose logs -f` (Ctrl + C pour quitter).
 - Arrêter : `docker compose down`.
 - Mettre à jour le conteneur après un changement sur GitHub :
@@ -430,6 +486,9 @@ docker compose ps
 ```
 
 La première commande entre dans le dossier, la deuxième récupère la nouvelle version, la troisième reconstruit et relance la boîte, la quatrième supprime les anciennes versions inutiles, la dernière montre l'état (cherchez « healthy »).
+
+![Les quatre étapes de la mise à jour](img/27-schema-mise-a-jour.png)
+
 - Au redémarrage du serveur, l'application repart seule grâce à `restart: unless-stopped`.
 
 ### Sans Docker : nginx seul
@@ -455,9 +514,9 @@ Attention : la vue 3D et la reconnaissance d'écriture chargent des bibliothèqu
 Chaque couleur de fil, donc chaque aiguille, peut avoir ses propres réglages de points.
 
 1. Dans la liste **Fils**, repérez la ligne de l'aiguille voulue. Elle contient le style (tatami, satin, zigzag…), l'angle et un bouton **⚙**.
-2. Cliquez sur **⚙** : une fenêtre s'ouvre avec les réglages de points de cette aiguille uniquement, rangés par famille.
+2. Cliquez sur **⚙** : un panneau s'ouvre à la place de la colonne de gauche, avec les réglages de points de cette aiguille uniquement, rangés par famille. Le motif et les fils restent visibles à droite.
 3. Déplacez un curseur, tapez une valeur ou choisissez dans un menu : seule cette aiguille change. Le motif se recalcule après un court instant.
-4. **Réinitialiser** remet l'aiguille sur les réglages généraux. **Copier vers toutes les aiguilles** applique ses réglages aux 15 couleurs. **Fermer** ferme la fenêtre.
+4. **Réinitialiser** remet l'aiguille sur les réglages généraux. **Copier vers toutes les aiguilles** applique ses réglages aux 15 couleurs. **Fermer** ferme le panneau.
 
 ![Réglages de l'aiguille 1](img/15-reglages-aiguille.png)
 
@@ -602,10 +661,42 @@ La sous-couche du tatami peut maintenant être faite en zigzag, ce qui soutient 
 
 ![Sous-couche en zigzag sous un remplissage espacé](img/25-sous-couche-zigzag.png)
 
-## 37. Ce qui n'est pas encore disponible
+## 37. Se repérer : couleurs, icônes et panneaux
+
+L'interface est colorée pour que chaque zone se reconnaisse d'un coup d'œil. Chaque titre porte une icône :
+- 🧵 **Matière** : tissu et stabilisateurs (dessous et dessus).
+- 🎨 **Style** : conversion, type de point, optimisation automatique, tracés à la main.
+- ✍️ **Texte seul** et 🔤 **Texte sur l'image**.
+- 🌈 **Palette de fils** : import de la palette Madeira.
+- 👁️ **Affichage** : relief, vue 3D, lumière, inclinaison.
+- 💾 **Exporter** : DST (bouton orange), 10O et EDR.
+- 📐 **Montage sur cadre et aiguille** et 🪡 **Fils**, à droite de la colonne de gauche.
+
+![Écran d'accueil : glissez une image dans le cadre en pointillés](img/01-accueil.png)
+
+**Glisser-déposer** : vous pouvez faire glisser une image depuis votre dossier directement sur la page, sans passer par le bouton de choix de fichier.
+
+**Aide au survol** : laissez la souris sur un bouton quelques secondes, une bulle explique à quoi il sert.
+
+**Panneaux** : les trois panneaux (**Réglages rapides**, réglages d'une aiguille avec **⚙**, **Tous les réglages**) remplacent la colonne de gauche au lieu de se poser par-dessus. Ainsi, rien ne cache le motif, la ligne grise de compteurs, la liste des fils ni le montage. Pour changer de tissu ou de style pendant qu'un panneau est ouvert, cliquez sur **Fermer**. Dans **Réglages rapides**, le bouton **Tous les réglages** passe directement au panneau complet.
+
+![Réglages rapides : le motif, les compteurs et les fils restent visibles](img/04-rapide.png)
+
+**Thème clair ou sombre** : l'application suit le réglage de votre ordinateur. Les couleurs vives (violet, orange, turquoise) restent identiques dans les deux thèmes.
+
+![Le thème sombre avec le panneau Tous les réglages](img/28-theme-sombre.png)
+
+## 38. Ce qui n'est pas encore disponible
 
 - Export EOF, palette Madeira intégrée (à importer vous-même).
 - Réglages d'Ink/Stitch pas encore intégrés : arrêt de la machine après un objet (dépend de chaque machine) et lecture des polices de lettrage au format Ink/Stitch (remplacée par l'import de polices .ttf et .otf).
 - Le satin n'est pas encore soigné aux jonctions entre traits, et la reconnaissance d'écriture n'a pas pu être contrôlée avant livraison : elle dépend d'un chargement depuis internet.
 - Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
 - Le schéma de montage est un texte, pas encore un dessin.
+
+## 39. Journal des versions
+
+- **Version 2.2** : nouveau design plus vif et plus convivial (couleurs, icônes, bulles d'aide, glisser-déposer, thème sombre), panneaux de réglages qui remplacent la colonne de gauche sans rien cacher, correction du panneau Réglages rapides et du panneau Tous les réglages (leurs curseurs ne réagissaient pas), conteneur Docker 2.2.
+- **Version 2.1** : import de polices `.ttf` et `.otf`, colonnes de satin à rails, remplissage guidé par une ligne, sous-couche en zigzag du tatami, optimisation automatique des réglages à chaque changement de style, réglages satin et coupe de fil, point guide des cercles, interface compactée pour tout voir sans défiler, conteneur Docker durci.
+- **Version 2.0** : conteneur Docker avec contrôle de santé, réglages de points pour chacune des 15 aiguilles, zigzag, sous-couches de contour et en zigzag, méthodes de remplissage, points de départ, d'arrivée et d'arrêt, texte sur l'image, stabilisateurs dessous et dessus par tissu, rendu 3D avec la carte graphique.
+- **Version 1.x** : import d'images, conversion en couleur, gris et noir et blanc, tatami, satin, portrait, exports DST, 10O et EDR, rendu relief, guide en trois formats.
