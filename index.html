@@ -3,46 +3,58 @@
 <title>Atelier Broderie – photo vers DST</title>
 <!-- Atelier Broderie © Michaël PONCET (https://github.com/mikeDTA) – CC BY-NC 4.0 (voir LICENSE). Utilisation non commerciale uniquement. -->
 <style>
-:root{--bg:#17213a;--pn:#212e4f;--ink:#e8ebf3;--mut:#9aa6c4;--ac:#f2b134;--ln:#34456f}
-@media(prefers-color-scheme:light){:root{--bg:#eef1f7;--pn:#fff;--ink:#17213a;--mut:#56628a;--ln:#c8d0e4}}
-*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 Georgia,serif;display:grid;grid-template-columns:500px minmax(0,1fr);overflow:hidden}
-aside{padding:8px 12px;background:var(--pn);border-right:1px solid var(--ln);overflow:auto;columns:2;column-gap:16px}
-.blk{break-inside:avoid;margin-bottom:4px}main{padding:10px 14px;overflow:auto;min-width:0}
-h1{font-size:19px;margin:0 0 4px}h2{font-size:14px;margin:2px 0 1px}h3{font-size:13px;margin:0 0 2px}
-label{display:block;margin:2px 0;color:var(--mut)}.s{display:flex;gap:8px;align-items:center}.s input{flex:1;min-width:60px}input[type=range]{width:100%}input[type=text],select{width:100%}
-select,input,button{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:5px;padding:3px 6px}input[type=range],input[type=checkbox],input[type=color]{padding:0}
-button{cursor:pointer}button.go{background:var(--ac);color:#17213a;border-color:var(--ac);font-weight:bold}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac)}
-.row{display:flex;gap:8px;align-items:center}.row input[type=range]{flex:1}.row input[type=number]{width:64px}
-.top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(200px,1fr);gap:14px}
-#cv,#v3d canvas{max-width:100%;max-height:50vh;width:auto;height:auto;background:#d9d4c7;border:1px solid var(--ln);border-radius:4px}
-#info{color:var(--mut);margin:4px 0}pre{white-space:pre-wrap;background:var(--pn);padding:8px;border-radius:5px;border:1px solid var(--ln);margin:0;font-size:12.5px}
-#thr{display:grid;grid-template-columns:repeat(auto-fill,minmax(390px,1fr));gap:1px 12px}
-.thr{display:flex;gap:5px;align-items:center;margin:1px 0}.thr b{width:16px;height:16px;border-radius:50%;border:1px solid var(--ln);flex:none}.thr select{width:auto;max-width:110px}.thr input[type=color]{width:30px;height:24px}.thr input.a{width:52px}.thr button.g{padding:1px 6px}.thr.sel{outline:2px solid var(--ac);border-radius:5px}
-#quick{position:fixed;top:0;right:0;width:25vw;min-width:270px;height:100vh;background:var(--pn);border-left:2px solid var(--ac);padding:14px;overflow:auto;display:none;z-index:5}
-#adv,#needle{display:none;position:fixed;inset:3vh 3vw;background:var(--pn);border:2px solid var(--ac);border-radius:8px;padding:14px;z-index:9;overflow:auto}
-#advc,#nc{columns:4 230px;column-gap:18px}.grp{break-inside:avoid;margin-bottom:8px}
-@media(max-width:900px){body{display:block;overflow:auto}aside{columns:1}.top{display:block}}
-input[type=file]{width:100%;max-width:100%;font-size:12px}</style></head><body>
+:root{--bg:#f3f0ff;--pn:#ffffff;--card:#faf8ff;--ink:#1d1b3a;--mut:#5b5a85;--ac:#ff6b1a;--ac2:#7c3aed;--ac3:#06b6d4;--ln:#d6d0ff;--hl:#fff1dd}
+@media(prefers-color-scheme:dark){:root{--bg:#14122b;--pn:#1c1a3d;--card:#25225a;--ink:#f5f3ff;--mut:#bdb7f5;--ac:#ffb020;--ac2:#a78bfa;--ac3:#22d3ee;--ln:#413b8f;--hl:#3a2f12}}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.3 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;display:grid;grid-template-columns:500px minmax(0,1fr);overflow:hidden}
+body.dock{grid-template-columns:360px minmax(0,1fr)}body.dock.needle{grid-template-columns:620px minmax(0,1fr)}body.advopen{grid-template-columns:700px minmax(0,1fr)}body.dock aside,body.advopen aside{display:none}
+aside{padding:8px 10px;background:var(--pn);border-right:2px solid var(--ln);overflow:auto;columns:2;column-gap:10px}
+.blk{break-inside:avoid;margin-bottom:3px;background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:2px 8px}
+main{padding:10px 14px;overflow:auto;min-width:0}
+h1{font-size:19px;margin:0 0 4px;color:#fff;background:linear-gradient(120deg,#7c3aed,#ec4899 55%,#ff6b1a);padding:3px 10px;border-radius:9px}h1 small{opacity:.85}
+h2{font-size:14px;margin:1px 0;color:var(--ac2)}h3{font-size:13px;margin:0 0 2px;color:var(--ac)}
+label{display:block;margin:1px 0;color:var(--mut)}.s{display:flex;gap:8px;align-items:center}.s input{flex:1;min-width:60px}
+input[type=range]{width:100%;accent-color:var(--ac2)}input[type=checkbox]{accent-color:var(--ac2)}input[type=text],select{width:100%}
+select,input,button{font:inherit;color:var(--ink);background:var(--pn);border:1.5px solid var(--ln);border-radius:7px;padding:2px 6px}
+input[type=range],input[type=checkbox],input[type=color]{padding:0;border:0;background:none}
+input[type=file]{width:100%;max-width:100%;font-size:12px}
+button{cursor:pointer;font-weight:600;transition:transform .1s,background .15s}button:hover{background:var(--ln);transform:translateY(-1px)}
+button.go{background:linear-gradient(120deg,#ff6b1a,#ec4899);color:#fff;border-color:transparent}button.go:hover{filter:brightness(1.1);background:linear-gradient(120deg,#ff6b1a,#ec4899)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ac3);outline-offset:1px}
+.row{display:flex;gap:6px;align-items:center}.row input[type=range]{flex:1}.row input[type=number]{width:64px}
+.top{display:flex;flex-wrap:wrap;gap:14px}.top>div:first-child{flex:1.5 1 300px;min-width:0}.top>div:last-child{flex:1 1 240px}
+#cv,#v3d canvas{max-width:100%;max-height:50vh;width:auto;height:auto;background:#eee;border:3px solid var(--ac2);border-radius:12px;box-shadow:0 4px 14px rgba(124,58,237,.25)}
+body.advopen #cv{max-height:36vh}
+#info{background:var(--hl);border-left:5px solid var(--ac);padding:5px 9px;border-radius:7px;margin:6px 0}
+pre{white-space:pre-wrap;background:var(--pn);padding:8px;border-radius:10px;border:1.5px solid var(--ln);margin:0;font:12.5px/1.4 Consolas,monospace}
+#thr{display:grid;grid-template-columns:repeat(auto-fill,minmax(390px,1fr));gap:1px 10px}
+.thr{display:flex;gap:5px;align-items:center;margin:1px 0;padding:2px 4px;border-radius:8px}.thr:hover{background:var(--card)}
+.thr b{width:16px;height:16px;border-radius:50%;border:1px solid var(--ln);flex:none}.thr select{width:auto;max-width:110px}.thr input[type=color]{width:30px;height:24px}.thr input.a{width:52px}.thr button.g{padding:1px 6px}.thr.sel{outline:2px solid var(--ac);background:var(--hl)}
+#quick,#needle,#adv{display:none;background:var(--pn);padding:12px;overflow:auto;height:100vh;grid-row:1}
+#quick{grid-column:1;border-right:3px solid var(--ac)}#needle{grid-column:1;border-right:3px solid var(--ac3)}#nc{columns:3 180px;column-gap:14px}#adv{grid-column:1;border-right:3px solid var(--ac2)}
+#advc{columns:4 150px;column-gap:12px}.grp{break-inside:avoid;margin-bottom:8px}
+@media(max-width:900px){body,body.dock,body.advopen{display:block;overflow:auto}aside{columns:1}#quick,#needle,#adv{height:auto}}
+</style></head><body>
 <aside>
-<div class="blk"><h1>Atelier Broderie <small style="font-size:12px;color:var(--mut)">v2.1</small></h1><input type="file" id="f" accept="image/*,.svg"><small style="color:var(--mut)">JPEG, PNG, SVG, GIF, WebP…</small></div>
-<div class="blk"><h2>Matière</h2><label>Tissu<select id="fab"></select></label><label>Stabilisateur dessous<select id="stab"></select></label><label>Stabilisateur dessus<select id="stabtop"><option value="none">Aucun</option><option value="hydro">Hydrosoluble</option></select></label></div>
-<div class="blk"><h2>Style</h2><label>Conversion<select id="mode"><option value="couleur">Couleur</option><option value="gris">Niveaux de gris</option><option value="nb">Noir et blanc</option></select></label><label>Type de point<select id="ptype"><option value="tatami">Remplissage tatami</option><option value="satin">Satin le long des tracés</option><option value="auto">Auto : satin fin, tatami large</option><option value="zigzag">Zigzag le long des tracés</option><option value="run">Point droit (contours)</option><option value="mix">Tatami + contour</option></select></label>
+<div class="blk"><h1>Atelier Broderie <small style="font-size:12px;color:var(--mut)">v2.2</small></h1><input type="file" id="f" accept="image/*,.svg"></div>
+<div class="blk"><h2>🧵 Matière</h2><label>Tissu<select id="fab"></select></label><label>Stabilisateur dessous<select id="stab"></select></label><label>Stabilisateur dessus<select id="stabtop"><option value="none">Aucun</option><option value="hydro">Hydrosoluble</option></select></label></div>
+<div class="blk"><h2>🎨 Style</h2><label>Conversion<select id="mode"><option value="couleur">Couleur</option><option value="gris">Niveaux de gris</option><option value="nb">Noir et blanc</option></select></label><label>Type de point<select id="ptype"><option value="tatami">Remplissage tatami</option><option value="satin">Satin le long des tracés</option><option value="auto">Auto : satin fin, tatami large</option><option value="zigzag">Zigzag le long des tracés</option><option value="run">Point droit (contours)</option><option value="mix">Tatami + contour</option></select></label>
 <button id="ocr">Détecter l’écriture (OCR)</button><small id="ocrst" style="color:var(--mut)"></small>
-<label><input type="checkbox" id="portrait"> Portrait (effet dessin)</label><label><input type="checkbox" id="skipBg" checked> Ignorer le fond</label><label><input type="checkbox" id="underlay" checked> Sous-couche</label><label><input type="checkbox" id="tuneon" checked> Optimiser les réglages à chaque changement de style</label><small id="tunemsg" style="color:var(--mut)"></small><div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px"><button id="guide">Point guide</button><button id="gline">Ligne guide</button><button id="rails">Satin à rails</button><button id="dend" style="display:none">Terminer</button><button id="dclear">Effacer</button></div></div>
-<div class="blk"><h2>Texte seul</h2><input type="text" id="txt" placeholder="Votre texte"><label>Police<select id="fnt"><option value="Arial, sans-serif">Sans empattement</option><option value="Georgia, serif">Avec empattement</option><option value="Courier New, monospace">Machine à écrire</option><option value="Brush Script MT, cursive">Manuscrite</option><option value="Impact, sans-serif">Gras compact</option><option value="Times New Roman, serif">Classique</option><option value="Verdana, sans-serif">Large lisible</option></select></label><label>Importer une police (.ttf, .otf, .woff)<input type="file" id="fontfile" accept=".ttf,.otf,.woff,.woff2"></label><button id="txtgo">Broder ce texte</button></div>
-<div class="blk"><h2>Texte sur l’image</h2><input type="text" id="ovtxt" placeholder="Texte à incruster"><label class="s">Taille<input type="range" id="ovsize" min="5" max="60" value="18"></label><label class="s">Position horizontale<input type="range" id="ovx" min="0" max="100" value="50"></label><label class="s">Position verticale<input type="range" id="ovy" min="0" max="100" value="85"></label></div>
-<div class="blk"><h2>Palette de fils</h2><label>Importer Madeira (.gpl, CSV)<input type="file" id="pal" accept=".gpl,.csv,.txt"></label><small id="palname" style="color:var(--mut)">Palette générique</small></div>
-<div class="blk"><h2>Affichage</h2><label><input type="checkbox" id="relief"> Relief (aperçu 2D)</label><label><input type="checkbox" id="v3dbox"> Vue 3D tournante</label><label><input type="checkbox" id="auto" checked> Rotation automatique</label><label><input type="checkbox" id="hq" checked> Haute qualité (ombres, carte graphique)</label><small id="gpu" style="color:var(--mut)"></small><label class="s">Lumière<input type="range" id="lt" min="0" max="360" value="315"></label><label class="s">Inclinaison<input type="range" id="tilt" min="0" max="60" value="0"></label></div>
-<div class="blk"><h2>Exporter</h2><div class="row"><button class="go" id="xdst">DST</button><button id="x10o">10O</button><button id="xedr">EDR</button></div><small style="color:var(--mut)">EOF (Embird Studio) : non disponible.</small></div>
-<div class="blk"><div class="row"><button id="bq">Réglages rapides</button><button id="ba">Tous les réglages</button></div></div>
+<label><input type="checkbox" id="portrait"> Portrait (effet dessin)</label><label><input type="checkbox" id="skipBg" checked> Ignorer le fond</label><label><input type="checkbox" id="underlay" checked> Sous-couche</label><label><input type="checkbox" id="tuneon" checked> Optimiser les réglages à chaque changement de style</label><small id="tunemsg" style="color:var(--mut)"></small><div class="row" style="flex-wrap:wrap;gap:4px;margin-top:4px"><button id="guide" title="Cliquez ensuite sur l’aperçu pour placer le centre des cercles">Point guide</button><button id="gline" title="Tracez une ligne que les rangées de points suivront">Ligne guide</button><button id="rails" title="Dessinez une bande de satin entre deux lignes">Satin à rails</button><button id="dend" style="display:none">Terminer</button><button id="dclear" title="Efface la ligne guide, le point guide et les rails">Effacer</button></div></div>
+<div class="blk"><h2>✍️ Texte seul</h2><input type="text" id="txt" placeholder="Votre texte"><label>Police<select id="fnt"><option value="Arial, sans-serif">Sans empattement</option><option value="Georgia, serif">Avec empattement</option><option value="Courier New, monospace">Machine à écrire</option><option value="Brush Script MT, cursive">Manuscrite</option><option value="Impact, sans-serif">Gras compact</option><option value="Times New Roman, serif">Classique</option><option value="Verdana, sans-serif">Large lisible</option></select></label><label>Importer une police (.ttf, .otf, .woff)<input type="file" id="fontfile" accept=".ttf,.otf,.woff,.woff2"></label><button id="txtgo">Broder ce texte</button></div>
+<div class="blk"><h2>🔤 Texte sur l’image</h2><input type="text" id="ovtxt" placeholder="Texte à incruster"><label class="s">Taille<input type="range" id="ovsize" min="5" max="60" value="18"></label><label class="s">Position horizontale<input type="range" id="ovx" min="0" max="100" value="50"></label><label class="s">Position verticale<input type="range" id="ovy" min="0" max="100" value="85"></label></div>
+<div class="blk"><h2>🌈 Palette de fils</h2><label>Importer Madeira (.gpl, CSV)<input type="file" id="pal" accept=".gpl,.csv,.txt"></label><small id="palname" style="color:var(--mut)">Palette générique</small></div>
+<div class="blk"><h2>👁️ Affichage</h2><label><input type="checkbox" id="relief"> Relief (aperçu 2D)</label><label><input type="checkbox" id="v3dbox"> Vue 3D tournante</label><label><input type="checkbox" id="auto" checked> Rotation automatique</label><label><input type="checkbox" id="hq" checked> Haute qualité (ombres, carte graphique)</label><small id="gpu" style="color:var(--mut)"></small><label class="s">Lumière<input type="range" id="lt" min="0" max="360" value="315"></label><label class="s">Inclinaison<input type="range" id="tilt" min="0" max="60" value="0"></label></div>
+<div class="blk"><h2>💾 Exporter</h2><div class="row"><button class="go" id="xdst" title="Fichier de broderie le plus répandu">DST</button><button id="x10o" title="Format Toyota">10O</button><button id="xedr" title="Liste des couleurs de fils">EDR</button></div></div>
+<div class="blk"><div class="row"><button id="bq" title="Ouvre les 10 réglages principaux à droite">Réglages rapides</button><button id="ba" title="Affiche tous les réglages à la place de cette colonne">Tous les réglages</button></div></div>
 </aside>
 <main>
-<div class="top"><div><canvas id="cv" width="800" height="600"></canvas><div id="v3d" style="display:none"></div><p id="info">Importez une image pour générer le motif.</p></div><div><h2>Montage sur cadre et aiguille</h2><pre id="mnt">—</pre></div></div>
-<h2>Fils : image → fil, aiguille, palette, couleur, style de point, angle</h2><div id="thr"></div>
+<div class="top"><div><canvas id="cv" width="800" height="600"></canvas><div id="v3d" style="display:none"></div><p id="info">Importez une image pour générer le motif.</p></div><div><h2>📐 Montage sur cadre et aiguille</h2><pre id="mnt">—</pre></div></div>
+<h2>🪡 Fils : image → fil, aiguille, palette, couleur, style de point, angle</h2><div id="thr"></div>
 </main>
 <div id="adv"><div class="row"><h2 style="margin:0;flex:1;font-size:16px">Tous les réglages</h2><button id="ax">Fermer</button></div><div id="advc"></div></div>
 <div id="needle"><div class="row"><h2 id="nt" style="margin:0;flex:1;font-size:16px"></h2><button id="ncopy">Copier vers toutes les aiguilles</button><button id="nreset">Réinitialiser</button><button id="nx">Fermer</button></div><div id="nc"></div></div>
-<div id="quick"><div class="row"><h2 style="margin:0;flex:1;font-size:16px">Réglages rapides</h2><button id="qx">Fermer</button></div><div id="qc"></div></div>
+<div id="quick"><div class="row"><h2 style="margin:0;flex:1;font-size:16px">Réglages rapides</h2><button id="ba2">Tous les réglages</button><button id="qx">Fermer</button></div><div id="qc"></div></div>
 <script>
 const $=id=>document.getElementById(id);
 const FAB={coton:{n:'Coton / popeline',sp:.40,pc:.2,nd:'75/11 universelle',st:'decoupable'},jersey:{n:'Jersey / maille (extensible)',sp:.45,pc:.3,nd:'75/11 bille (ballpoint)',st:'decoupable'},polo:{n:'Polo piqué',sp:.42,pc:.3,nd:'75/11 bille',st:'decoupable'},polaire:{n:'Polaire',sp:.45,pc:.25,nd:'90/14 universelle',st:'decoupable'},denim:{n:'Jean / toile épaisse',sp:.38,pc:.15,nd:'90/14 jeans',st:'dechirable'},feutrine:{n:'Feutrine',sp:.40,pc:.1,nd:'80/12 universelle',st:'dechirable'},soie:{n:'Satin / soie (fin)',sp:.50,pc:.1,nd:'65/9 pointe fine',st:'decoupable'},eponge:{n:'Éponge / serviette',sp:.45,pc:.3,nd:'90/14 universelle',st:'decoupable'},simili:{n:'Cuir / simili',sp:.50,pc:.1,nd:'90/14 cuir',st:'dechirable'}};
@@ -67,7 +79,7 @@ const TOP={coton:'inutile',jersey:'facultatif si le motif est dense',polo:'facul
 for(const[k,v]of Object.entries(FAB))$('fab').add(new Option(v.n,k));
 for(const[k,v]of Object.entries(STB))$('stab').add(new Option(v.n,k));
 function ctl(s,att,V){att=att||'data-k';V=V||P;if(s[7])return`<label>${s[1]}<select ${att}="${s[0]}">${s[7].map((o,i)=>`<option value="${i}"${V[s[0]]==i?' selected':''}>${o}</option>`).join('')}</select></label>`;return`<label>${s[1]}<div class="row"><input type="range" ${att}="${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${V[s[0]]}"><input type="number" ${att}="${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${V[s[0]]}"></div></label>`}
-$('qc').innerHTML=SPEC.filter(s=>s[5]).map(ctl).join('');const gr={};SPEC.forEach(s=>(gr[s[6]]=gr[s[6]]||[]).push(s));$('advc').innerHTML=Object.entries(gr).map(([g,a])=>`<div class="grp"><h3>${g}</h3>${a.map(ctl).join('')}</div>`).join('');
+$('qc').innerHTML=SPEC.filter(s=>s[5]).map(s=>ctl(s)).join('');const gr={};SPEC.forEach(s=>(gr[s[6]]=gr[s[6]]||[]).push(s));$('advc').innerHTML=Object.entries(gr).map(([g,a])=>`<div class="grp"><h3>${g}</h3>${a.map(s=>ctl(s)).join('')}</div>`).join('');
 document.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;P[k]=+e.target.value;document.querySelectorAll(`[data-k=${k}]`).forEach(i=>i.value=P[k]);later()});
 function setP(k,v){P[k]=v;document.querySelectorAll(`[data-k=${k}]`).forEach(i=>i.value=v)}
 function preset(){const F=FAB[$('fab').value],S=STB[$('stab').value];setP('spacing',+(F.sp*S.f).toFixed(2));setP('pullComp',F.pc);later()}
@@ -262,7 +274,7 @@ let t2;['ovtxt','ovsize','ovx','ovy'].forEach(i=>$(i).oninput=()=>{clearTimeout(
 
 let NP=null,nt2;
 function openNeedle(b,i){NP=b.st;if(!NP.o)NP.o={};$('nt').textContent='Aiguille n°'+(i+1)+' : '+b.name+' — réglages de points';const gr={};SPEC.forEach(s=>{if(/Général|Simplification|Portrait/.test(s[6])||s[0]==='angle')return;(gr[s[6]]=gr[s[6]]||[]).push(s)});
-$('nc').innerHTML=Object.entries(gr).map(([g,a])=>`<div class="grp"><h3>${g}</h3>${a.map(s=>ctl(s,'data-nk',Object.assign({},P,NP.o))).join('')}</div>`).join('');$('needle').style.display='block'}
+$('nc').innerHTML=Object.entries(gr).map(([g,a])=>`<div class="grp"><h3>${g}</h3>${a.map(s=>ctl(s,'data-nk',Object.assign({},P,NP.o))).join('')}</div>`).join('');showPanel('needle')}
 document.addEventListener('input',e=>{const k=e.target.dataset.nk;if(!k||!NP)return;NP.o[k]=+e.target.value;document.querySelectorAll('[data-nk='+k+']').forEach(i=>i.value=NP.o[k]);clearTimeout(nt2);nt2=setTimeout(rebuild,300)});
 $('nx').onclick=()=>$('needle').style.display='none';
 $('nreset').onclick=()=>{if(NP){NP.o={};$('needle').style.display='none';rebuild()}};
@@ -278,4 +290,12 @@ if(!DR.a){if(DR.pts.length>1){DR.a=DR.pts;DR.pts=[];dend.textContent='Terminer l
 if(DR.pts.length>1){COLS.push({a:DR.a,b:DR.pts});dmsg('Colonne de satin ajoutée.')}DR=null;dend.style.display='none';rebuild()};
 $('dclear').onclick=()=>{GL=[];COLS=[];GD=null;DR=null;dend.style.display='none';dmsg('Tracés effacés.');if(S)rebuild()};
 $('fontfile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const n='PoliceImportee'+Date.now(),ff=new FontFace(n,await f.arrayBuffer());await ff.load();document.fonts.add(ff);const o=new Option(f.name.replace(/\.[^.]+$/,''),"'"+n+"', sans-serif");$('fnt').add(o);$('fnt').value=o.value;if($('txt').value.trim())$('txtgo').click();else if($('ovtxt').value.trim()&&S)rebuild()}catch(err){alert('Police illisible : essayez un fichier .ttf ou .otf.')}};
+
+function showPanel(id){['quick','needle','adv'].forEach(x=>$(x).style.display=x===id?'block':'none');document.body.classList.toggle('dock',id==='quick'||id==='needle');document.body.classList.toggle('needle',id==='needle');document.body.classList.toggle('advopen',id==='adv')}
+$('bq').onclick=()=>showPanel('quick');$('qx').onclick=()=>showPanel(null);$('ba').onclick=()=>showPanel('adv');$('ax').onclick=()=>showPanel(null);$('ba2').onclick=()=>showPanel('adv');$('nx').onclick=()=>showPanel(null);
+$('nreset').onclick=()=>{if(NP){NP.o={};showPanel(null);rebuild()}};
+document.body.addEventListener('dragover',e=>e.preventDefault());
+document.body.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&/^image\//.test(f.type)){const dt=new DataTransfer();dt.items.add(f);$('f').files=dt.files;$('f').dispatchEvent(new Event('change'))}});
+function drawEmpty(){const c=$('cv'),x=c.getContext('2d');c.width=800;c.height=600;x.fillStyle='#ece8ff';x.fillRect(0,0,800,600);x.strokeStyle='#7c3aed';x.lineWidth=4;x.setLineDash([14,10]);x.strokeRect(30,30,740,540);x.setLineDash([]);x.fillStyle='#7c3aed';x.textAlign='center';x.font='bold 34px "Segoe UI",sans-serif';x.fillText('Glissez une image ici',400,280);x.font='22px "Segoe UI",sans-serif';x.fillText('ou utilisez le bouton de choix de fichier à gauche',400,330)}
+drawEmpty();
 </script></body></html>
