@@ -42,8 +42,12 @@ Ce guide s'adresse à des personnes qui n'ont aucune habitude de l'informatique.
    * 35. Le remplissage guidé par une ligne
    * 36. La sous-couche en zigzag du tatami
    * 37. Se repérer : couleurs, icônes et panneaux
-   * 38. Ce qui n'est pas encore disponible
-   * 39. Journal des versions
+   * 38. Redimensionner votre motif
+   * 39. Plus de couleurs et ajout de couleurs
+   * 40. Une conversion de meilleure qualité
+   * 41. Le portrait : jusqu'à 4 couleurs et du texte
+   * 42. Ce qui n'est pas encore disponible
+   * 43. Journal des versions
 
 =====1. Avant de commencer=====
 
@@ -133,7 +137,7 @@ Cliquez sur **Réglages rapides** : un panneau étroit remplace la colonne de ga
 {{attach file="04-rapide.png" desc="Panneau des réglages rapides"}}
 
    * **Largeur (mm)** : taille finale du motif. La hauteur suit. Plage 20 à 300, défaut 100. Vérifiez qu'elle tient dans votre cadre.
-   * **Nombre de couleurs** : couleurs maximum après simplification de l'image. Plage 2 à 12, défaut 5. Moins de couleurs signifie moins de changements de fil.
+   * **Nombre de couleurs** : couleurs maximum après simplification de l'image. Plage 2 à 24, réglée seule selon votre image (de 6 à 15). Plus de couleurs donne un rendu plus fidèle, moins de couleurs donne moins de changements de fil. Au-delà de 15, la machine n'a plus assez d'aiguilles : un fil se change à la main.
    * **Vitesse machine (points/min)** : sert uniquement à l'estimation du temps. Plage 200 à 1000, défaut 650.
    * **Lissage des zones** : arrondit les contours et supprime le bruit. Plage 0 à 4, défaut 1. Montez si l'image est une photo, laissez à 0 pour un logo net.
    * **Zone minimale fusionnée** : les taches plus petites que cette taille prennent la couleur voisine. Plage 0 à 300, défaut 30. Montez pour réduire fortement les coupes.
@@ -195,7 +199,7 @@ Le menu **Conversion** s'applique à toutes les images.
 
 =====10. Le mode portrait=====
 
-Cochez **Portrait (effet dessin à la main)**. Seules les zones sombres sont remplies, avec des hachures espacées : l'effet ressemble à un croquis. Associez-le à **Niveaux de gris** ou **Noir et blanc** pour une version monochrome, ou à **Couleur** pour une version colorée. Réglez l'épaisseur du trait avec **Espacement des hachures portrait**.
+Cochez **Portrait (effet dessin à la main)**. L'image est découpée en tons, du plus sombre au plus clair : chaque ton est rempli de hachures, plus serrées pour les tons sombres, et le ton le plus clair est laissé libre, comme la feuille blanche d'un croquis. Vous pouvez utiliser jusqu'à 4 couleurs différentes (partie 41). Associez-le à **Niveaux de gris** ou **Noir et blanc** pour une version monochrome, ou à **Couleur** pour une version colorée.
 
 {{attach file="08-portrait.png" desc="Mode portrait"}}
 
@@ -207,7 +211,7 @@ Choisissez **Tatami + contour** : une ligne de point droit entoure chaque zone. 
 
 =====12. La palette de fils Madeira=====
 
-La palette fournie est générique (18 couleurs). Pour utiliser Madeira :
+La palette fournie est générique et étendue (77 couleurs : 12 teintes en 4 intensités, des gris, des beiges et des bruns). Pour utiliser Madeira :
    1) Procurez-vous une palette Madeira au format **.gpl** (Ink/Stitch en propose) ou un fichier texte avec une ligne par fil : ""code;nom;#rrggbb"".
    1) Dans **Palette de fils**, cliquez sur **Importer Madeira**, puis choisissez le fichier.
    1) Le nom du fichier et le nombre de fils s'affichent. Le motif se recalcule avec les fils les plus proches.
@@ -332,7 +336,7 @@ Chaque point est un petit bloc éclairé, avec la couleur du fil choisi pour l'a
    1) Dans la liste **Fils**, chaque ligne commence par un carré : la couleur moyenne de la zone **dans l'image**. Il est suivi d'une pastille : la couleur du **fil** retenu.
    1) Le fil est choisi comme l'œil le verrait (calcul en espace colorimétrique Lab), pas par simple addition de rouge, vert et bleu.
    1) Si le fil proposé ne vous convient pas, choisissez-en un autre dans le menu déroulant de la ligne, ou cliquez sur la case de couleur.
-   1) Plus la palette est riche, plus la correspondance est fidèle : importez la palette Madeira (partie 12) pour de meilleurs résultats qu'avec les 18 couleurs génériques.
+   1) Plus la palette est riche, plus la correspondance est fidèle : importez la palette Madeira (partie 12) pour retrouver vos références de bobines. La palette générique contient déjà 77 couleurs, ce qui donne des teintes proches de l'image.
 
 =====25. Ajouter un texte sur l'image brodée=====
 
@@ -406,11 +410,11 @@ ls
 La liste doit contenir ""Dockerfile"", ""docker-compose.yml"", ""nginx.conf"", ""index.html"" et ""docs"". Sans Git, téléchargez le ZIP depuis GitHub (partie 2), décompressez-le et placez-vous dans le dossier avec la commande ""cd"".
 
 ====Étape 4 : les fichiers Docker (déjà dans le projet)====
-**Dockerfile** (version 2.2) : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
+**Dockerfile** (version 2.3) : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
 
 %%
 FROM nginx:stable-alpine
-ARG APP_VERSION=2.2
+ARG APP_VERSION=2.3
 LABEL org.opencontainers.image.title="BroderieIA - Atelier Broderie" \
       org.opencontainers.image.version="${APP_VERSION}"
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -421,7 +425,7 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
 EXPOSE 80
 %%
 
-**docker-compose.yml** : donne le nom de la boîte (""broderieia""), sa version (2.2), son port (8080), une protection contre les élévations de droits et le redémarrage automatique.
+**docker-compose.yml** : donne le nom de la boîte (""broderieia""), sa version (2.3), son port (8080), une protection contre les élévations de droits et le redémarrage automatique.
 
 %%
 services:
@@ -429,8 +433,8 @@ services:
     build:
       context: .
       args:
-        APP_VERSION: "2.2"
-    image: broderieia:2.2
+        APP_VERSION: "2.3"
+    image: broderieia:2.3
     container_name: broderieia
     ports:
       - "8080:80"
@@ -467,12 +471,12 @@ docker ps
 La deuxième commande doit afficher une ligne ""broderieia"" avec l'état « Up ». Après une trentaine de secondes, l'état devient « Up (healthy) » : le contrôle de santé confirme que le serveur répond. Ouvrez Firefox et allez sur ""http://localhost:8080"" : l'application apparaît, comme sur la capture de la partie 4.
 
 ====Étape 6 : l'ouvrir depuis un autre ordinateur====
-   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.268.1.20"") est celle du serveur.
-   1) Sur l'autre ordinateur, allez sur ""http://192.268.1.20:8080"".
+   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.368.1.20"") est celle du serveur.
+   1) Sur l'autre ordinateur, allez sur ""http://192.368.1.20:8080"".
    1) Si la page ne s'ouvre pas, autorisez le port : ""sudo ufw allow 8080/tcp"" (le pare-feu est inactif par défaut sous Kubuntu : ""sudo ufw status"" le dit).
 
 ====Étape 7 : gérer le service====
-   * Voir la version installée : ""docker images"" (la ligne ""broderieia"" doit afficher ""2.2"").
+   * Voir la version installée : ""docker images"" (la ligne ""broderieia"" doit afficher ""2.3"").
    * Voir les messages : ""docker compose logs -f"" (Ctrl + C pour quitter).
    * Arrêter : ""docker compose down"".
    * Mettre à jour le conteneur après un changement sur GitHub :
@@ -586,11 +590,11 @@ Les chaînes de menus peuvent varier selon la version de votre navigateur.
    1) Pour garder vos propres valeurs, décochez la case avant de changer de style.
 
 Ce qui change selon le style :
-   * **Couleur** : 6 couleurs. **Niveaux de gris** : 5 nuances. **Noir et blanc** : 2 tons, lissage plus fort, zones fusionnées plus grandes.
+   * **Couleur** : de 6 à 15 couleurs selon le nombre de teintes de l'image. **Niveaux de gris** : de 5 à 10 nuances. **Noir et blanc** : 2 tons, lissage plus fort, zones fusionnées plus grandes.
    * **Satin et Auto** : 4 couleurs, lissage 2, grandes zones fusionnées, sous-couche de contour.
    * **Zigzag** : 3 couleurs, pointes espacées de 1 mm, largeur 2,5 mm.
    * **Point droit** : 4 couleurs, points de 2,5 mm.
-   * **Portrait** : 5 couleurs au plus, lissage 2, hachures de 1 mm.
+   * **Portrait** : jusqu'à 4 couleurs (partie 41), lissage 2, hachures de 1 mm.
 
 L'espacement des rangs dépend du tissu choisi, pas du style : il n'est pas modifié ici.
 
@@ -686,7 +690,66 @@ L'interface est colorée pour que chaque zone se reconnaisse d'un coup d'œil. C
 
 {{attach file="28-theme-sombre.png" desc="Le thème sombre avec le panneau Tous les réglages"}}
 
-=====38. Ce qui n'est pas encore disponible=====
+=====38. Redimensionner votre motif=====
+
+Une barre **Taille du motif** se trouve juste au-dessus de la photo : elle règle la taille finale de la broderie.
+
+{{attach file="30-redimensionner.png" desc="La barre Taille du motif au-dessus de l'aperçu"}}
+
+   1) Déplacez le curseur, ou tapez la **largeur** en millimètres dans la première case. La hauteur se calcule seule.
+   1) Vous préférez fixer la hauteur ? Tapez-la dans la deuxième case : la largeur s'adapte en gardant les proportions de l'image.
+   1) Le motif se recalcule à la nouvelle taille. Le nombre de points, la durée et le montage se mettent à jour.
+
+La largeur va de 20 à 300 mm. Vérifiez que la taille choisie tient dans le cadre de votre brodeuse. Ce réglage est le même que **Largeur** dans les réglages rapides.
+
+=====39. Plus de couleurs et ajout de couleurs=====
+
+La conversion d'une photo utilise maintenant plus de couleurs : l'application compte les teintes de votre image et choisit entre 6 et 15 couleurs. La palette de fils proposée compte 77 couleurs.
+
+   1) Ouvrez **Réglages rapides**.
+   1) Cliquez sur **➕ Ajouter une couleur** pour en ajouter une, ou sur **➖ Retirer** pour en enlever une. Le motif est recalculé à chaque clic. Le curseur **Nombre de couleurs** fait la même chose.
+   1) La ligne grise de compteurs indique le nombre de couleurs réellement brodées. Deux zones qui reçoivent le même fil sont regroupées sur la même aiguille.
+
+{{attach file="31-plus-de-couleurs.png" desc="Réglages rapides avec les boutons Ajouter une couleur et Retirer"}}
+
+Votre brodeuse a 15 aiguilles. Si le motif dépasse 15 couleurs, la ligne de compteurs affiche un avertissement : il faudra changer un fil à la main en cours de broderie.
+
+=====40. Une conversion de meilleure qualité=====
+
+L'application a été essayée sur trois photos libres de droits (un portrait, un chat et une tasse de café). L'écart moyen entre les couleurs de la photo et celles des fils a été mesuré avant et après les améliorations : il baisse de **57 %** sur le portrait, de **34 %** sur le chat et de **48 %** sur la tasse. Les gains viennent de :
+   * **Calcul des couleurs à la manière de l'œil** : les couleurs sont regroupées dans un espace colorimétrique proche de la vision humaine (Lab), pas par simple addition de rouge, vert et bleu.
+   * **Palette plus riche** : 77 fils au lieu de 18.
+   * **Plus de couleurs** : jusqu'à 15 adaptées à l'image.
+   * **Lissage de la photo avant conversion** : le grain de l'image est atténué en gardant les contours.
+   * **Image plus fine** : l'image est analysée en plus haute résolution.
+   * **Angle automatique** : les rangées de points suivent la forme de chaque zone.
+
+{{attach file="34-qualite-avant-apres.png" desc="Avant : ancienne conversion. Après : nouvelle conversion"}}
+
+Réglages de la famille **Qualité de la photo** (dans les réglages rapides et dans « Tous les réglages ») :
+   * **Lissage de la photo avant conversion** (0 à 3, défaut 1) : plus la valeur monte, plus le grain disparaît. Montez pour une photo bruitée, laissez à 0 pour un logo net.
+   * **Saturation des couleurs** (0 à 60 %, défaut 10) : rend les couleurs plus vives, car un fil paraît souvent plus terne qu'un écran.
+   * **Contraste automatique** (Non ou Oui) : étire les clairs et les sombres d'une photo grise ou délavée.
+   * **Angle automatique par zone** (Non ou Oui, défaut Oui) : chaque zone reçoit un angle de rangées qui suit sa forme. Si vous tapez un angle dans la ligne d'une aiguille, cette zone garde votre angle.
+
+=====41. Le portrait : jusqu'à 4 couleurs et du texte=====
+
+   1) Cochez **Portrait (effet dessin)**.
+   1) Réglez **Couleurs du portrait (1 à 4)** dans les réglages rapides. Chaque couleur correspond à un ton de l'image, du plus sombre au plus clair. Les tons sombres sont hachurés plus serré.
+   1) Avec **Couleur**, les fils sont choisis d'après les tons de la photo. Avec **Noir et blanc** ou **Niveaux de gris**, ce sont des noirs et des gris.
+
+{{attach file="32-portrait-4-couleurs.png" desc="Portrait avec 4 couleurs de fils"}}
+
+Le texte sur la photo marche aussi en portrait :
+   1) Dans **Texte sur l'image**, tapez votre texte, puis réglez la taille et la position.
+   1) Les hachures sont retirées sous les lettres, avec une petite marge, et le texte est brodé en satin par-dessus.
+   1) Il a sa ligne « texte » dans la liste des fils pour choisir sa couleur.
+
+{{attach file="33-portrait-texte.png" desc="Portrait avec un texte en bas"}}
+
+Utilisez une photo où le visage est bien contrasté : un portrait flou ou en contre-jour donne des tons peu lisibles. Le résultat est un croquis hachuré, pas une photo.
+
+=====42. Ce qui n'est pas encore disponible=====
 
    * Export EOF, palette Madeira intégrée (à importer vous-même).
    * Réglages d'Ink/Stitch pas encore intégrés : arrêt de la machine après un objet (dépend de chaque machine) et lecture des polices de lettrage au format Ink/Stitch (remplacée par l'import de polices .ttf et .otf).
@@ -694,8 +757,9 @@ L'interface est colorée pour que chaque zone se reconnaisse d'un coup d'œil. C
    * Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
    * Le schéma de montage est un texte, pas encore un dessin.
 
-=====39. Journal des versions=====
+=====43. Journal des versions=====
 
+   * **Version 2.3** : barre de taille du motif au-dessus de la photo, conversion de meilleure qualité (calcul des couleurs en Lab, lissage de la photo, saturation, contraste automatique, angle automatique), plus de couleurs adaptées à l'image (6 à 15, jusqu'à 24 en réglage) et palette générique de 77 fils, boutons Ajouter ou Retirer une couleur, portrait en tons avec jusqu'à 4 couleurs et texte possible, liste des fils plus compacte, conteneur Docker 2.3.
    * **Version 2.2** : nouveau design plus vif et plus convivial (couleurs, icônes, bulles d'aide, glisser-déposer, thème sombre), panneaux de réglages qui remplacent la colonne de gauche sans rien cacher, correction du panneau Réglages rapides et du panneau Tous les réglages (leurs curseurs ne réagissaient pas), conteneur Docker 2.2.
    * **Version 2.1** : import de polices "".ttf"" et "".otf"", colonnes de satin à rails, remplissage guidé par une ligne, sous-couche en zigzag du tatami, optimisation automatique des réglages à chaque changement de style, réglages satin et coupe de fil, point guide des cercles, interface compactée pour tout voir sans défiler, conteneur Docker durci.
    * **Version 2.0** : conteneur Docker avec contrôle de santé, réglages de points pour chacune des 15 aiguilles, zigzag, sous-couches de contour et en zigzag, méthodes de remplissage, points de départ, d'arrivée et d'arrêt, texte sur l'image, stabilisateurs dessous et dessus par tissu, rendu 3D avec la carte graphique.
