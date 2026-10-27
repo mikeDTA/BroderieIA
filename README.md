@@ -1,4 +1,4 @@
-# Atelier Broderie v2.2 (dépôt broderieIA)
+# Atelier Broderie v2.3 (dépôt broderieIA)
 
 Auteur : Michaël PONCET, https://github.com/mikeDTA
 
@@ -19,9 +19,10 @@ Cochez **Portrait** pour un rendu hachuré façon dessin, avec option noir et bl
 ## État actuel
 Fonctionnel : import de tout format d'image, conversion couleur / niveaux de gris / noir et blanc, simplification des zones (moins de coupes de fil), style de point choisi par couleur (tatami, vrai satin, auto, point droit, contours), fils regroupés par couleur, OCR pour broder l'écriture en satin, sous-couche, portrait, import de palette de fils (.gpl ou CSV), nombre de points et durée estimée, texte brodé, rendu relief, vue 3D tournante (three.js), 15 aiguilles avec choix des fils en direct, exports DST, 10O et EDR,  texte brodé par-dessus l'image, stabilisateurs dessous et dessus par tissu, correspondance des couleurs en Lab, interface sans défilement, déploiement Docker (`Dockerfile`, `docker-compose.yml`, `nginx.conf`), guide en PDF / Markdown / YesWiki dans `docs/`.
 Aussi : réglages de points par aiguille (15 couleurs), zigzag, sous-couches de contour et en zigzag, méthodes de remplissage (rangées, contours, cercles, méandre), points de départ, d'arrivée et d'arrêt, rendu 3D avec carte graphique.
-Aussi : optimisation automatique des réglages à chaque changement de style, réglages satin et coupe de fil d'Ink/Stitch, point guide des cercles, conteneur Docker v2.2 avec contrôle de santé.
+Aussi : optimisation automatique des réglages à chaque changement de style, réglages satin et coupe de fil d'Ink/Stitch, point guide des cercles, conteneur Docker v2.3 avec contrôle de santé.
 Aussi : import de polices .ttf/.otf, colonnes de satin à rails dessinées à la main, remplissage guidé par une ligne, sous-couche en zigzag du tatami.
 Aussi : design plus vif (icônes, thème sombre, glisser-déposer, bulles d'aide), panneaux de réglages qui ne cachent plus le motif.
+Aussi : barre de taille du motif, conversion de meilleure qualité (Lab, lissage, saturation, angle automatique), palette de 77 fils, plus de couleurs (6 à 15, jusqu'à 24), portrait en tons jusqu'à 4 couleurs avec texte.
 À venir : export EOF (format Embird Studio non documenté), satin plus soigné aux jonctions, réglages Ink/Stitch restants (zigzag, sous-couches de contour, méthodes de remplissage).
 
 ## Déploiement avec Docker
