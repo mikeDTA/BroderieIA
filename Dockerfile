@@ -1,7 +1,7 @@
-# BroderieIA - Atelier Broderie v2.3
+# BroderieIA - Atelier Broderie v2.4
 # (c) Michaël PONCET (https://github.com/mikeDTA) - CC BY-NC 4.0
 FROM nginx:stable-alpine
-ARG APP_VERSION=2.3
+ARG APP_VERSION=2.4
 LABEL org.opencontainers.image.title="BroderieIA - Atelier Broderie" \
       org.opencontainers.image.authors="Michaël PONCET (https://github.com/mikeDTA)" \
       org.opencontainers.image.licenses="CC-BY-NC-4.0" \
