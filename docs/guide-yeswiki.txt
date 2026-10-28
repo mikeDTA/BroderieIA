@@ -46,8 +46,14 @@ Ce guide s'adresse à des personnes qui n'ont aucune habitude de l'informatique.
    * 39. Plus de couleurs et ajout de couleurs
    * 40. Une conversion de meilleure qualité
    * 41. Le portrait : jusqu'à 4 couleurs et du texte
-   * 42. Ce qui n'est pas encore disponible
-   * 43. Journal des versions
+   * 42. Fermer une forme
+   * 43. Regrouper les couleurs pour limiter les sauts et les coupes de fil
+   * 44. Zoom et agrandissement de la photo
+   * 45. Ne pas afficher une couleur
+   * 46. Plusieurs textes, plusieurs polices
+   * 47. Le sens du fichier DST : annuler l'effet miroir
+   * 48. Ce qui n'est pas encore disponible
+   * 49. Journal des versions
 
 =====1. Avant de commencer=====
 
@@ -340,14 +346,9 @@ Chaque point est un petit bloc éclairé, avec la couleur du fil choisi pour l'a
 
 =====25. Ajouter un texte sur l'image brodée=====
 
-   1) Dans la zone **Texte sur l'image**, tapez votre texte.
-   1) Réglez la **Taille**, la **Position horizontale** et la **Position verticale** avec les curseurs.
-   1) Le texte est brodé en satin par-dessus. Les points de l'image sont retirés sous les lettres, avec une petite marge : les fils ne se superposent pas.
-   1) Le texte a sa ligne dans la liste **Fils** (mention « texte »). Changez sa couleur comme pour les autres fils.
+Le texte sur l'image se règle maintenant dans un panneau à part, qui permet **plusieurs textes avec des polices différentes** : voir la partie 46. Les points de l'image sont retirés sous chaque lettre, avec une petite marge : les fils ne se superposent pas.
 
 {{attach file="14-texte-image.png" desc="Texte sur l'image"}}
-
-Utilisez un texte assez grand : sous 10 mm de haut, les lettres deviennent difficiles à broder. Le texte est brodé en dernier.
 
 =====26. Mettre l'application sur un serveur (Kubuntu, Docker)=====
 
@@ -410,11 +411,11 @@ ls
 La liste doit contenir ""Dockerfile"", ""docker-compose.yml"", ""nginx.conf"", ""index.html"" et ""docs"". Sans Git, téléchargez le ZIP depuis GitHub (partie 2), décompressez-le et placez-vous dans le dossier avec la commande ""cd"".
 
 ====Étape 4 : les fichiers Docker (déjà dans le projet)====
-**Dockerfile** (version 2.3) : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
+**Dockerfile** (version 2.4) : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
 
 %%
 FROM nginx:stable-alpine
-ARG APP_VERSION=2.3
+ARG APP_VERSION=2.4
 LABEL org.opencontainers.image.title="BroderieIA - Atelier Broderie" \
       org.opencontainers.image.version="${APP_VERSION}"
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -425,7 +426,7 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
 EXPOSE 80
 %%
 
-**docker-compose.yml** : donne le nom de la boîte (""broderieia""), sa version (2.3), son port (8080), une protection contre les élévations de droits et le redémarrage automatique.
+**docker-compose.yml** : donne le nom de la boîte (""broderieia""), sa version (2.4), son port (8080), une protection contre les élévations de droits et le redémarrage automatique.
 
 %%
 services:
@@ -433,8 +434,8 @@ services:
     build:
       context: .
       args:
-        APP_VERSION: "2.3"
-    image: broderieia:2.3
+        APP_VERSION: "2.4"
+    image: broderieia:2.4
     container_name: broderieia
     ports:
       - "8080:80"
@@ -471,12 +472,12 @@ docker ps
 La deuxième commande doit afficher une ligne ""broderieia"" avec l'état « Up ». Après une trentaine de secondes, l'état devient « Up (healthy) » : le contrôle de santé confirme que le serveur répond. Ouvrez Firefox et allez sur ""http://localhost:8080"" : l'application apparaît, comme sur la capture de la partie 4.
 
 ====Étape 6 : l'ouvrir depuis un autre ordinateur====
-   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.368.1.20"") est celle du serveur.
-   1) Sur l'autre ordinateur, allez sur ""http://192.368.1.20:8080"".
+   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.468.1.20"") est celle du serveur.
+   1) Sur l'autre ordinateur, allez sur ""http://192.468.1.20:8080"".
    1) Si la page ne s'ouvre pas, autorisez le port : ""sudo ufw allow 8080/tcp"" (le pare-feu est inactif par défaut sous Kubuntu : ""sudo ufw status"" le dit).
 
 ====Étape 7 : gérer le service====
-   * Voir la version installée : ""docker images"" (la ligne ""broderieia"" doit afficher ""2.3"").
+   * Voir la version installée : ""docker images"" (la ligne ""broderieia"" doit afficher ""2.4"").
    * Voir les messages : ""docker compose logs -f"" (Ctrl + C pour quitter).
    * Arrêter : ""docker compose down"".
    * Mettre à jour le conteneur après un changement sur GitHub :
@@ -740,25 +741,120 @@ Réglages de la famille **Qualité de la photo** (dans les réglages rapides et 
 
 {{attach file="32-portrait-4-couleurs.png" desc="Portrait avec 4 couleurs de fils"}}
 
-Le texte sur la photo marche aussi en portrait :
-   1) Dans **Texte sur l'image**, tapez votre texte, puis réglez la taille et la position.
-   1) Les hachures sont retirées sous les lettres, avec une petite marge, et le texte est brodé en satin par-dessus.
-   1) Il a sa ligne « texte » dans la liste des fils pour choisir sa couleur.
+Le texte sur la photo marche aussi en portrait (partie 46) :
+   1) Cliquez sur **Gérer les textes**, puis **Ajouter un texte**.
+   1) Tapez le texte, puis réglez la taille et la position.
+   1) Les hachures sont retirées sous les lettres, avec une petite marge, et le texte est brodé par-dessus.
+   1) Chaque texte a sa ligne « texte » dans la liste des fils.
 
 {{attach file="33-portrait-texte.png" desc="Portrait avec un texte en bas"}}
 
 Utilisez une photo où le visage est bien contrasté : un portrait flou ou en contre-jour donne des tons peu lisibles. Le résultat est un croquis hachuré, pas une photo.
 
-=====42. Ce qui n'est pas encore disponible=====
+=====42. Fermer une forme=====
+
+Un cercle ou un contour dessiné avec un petit trou donne une forme ouverte : les points débordent ou la forme se découpe mal. Deux outils la referment.
+
+{{attach file="39-fermer-forme.png" desc="Avant : le cercle est ouvert. Après : le trou est fermé"}}
+
+**Fermeture automatique** : le réglage **Fermeture des petits trous (mm)** (réglages rapides, de 0 à 3 mm, défaut 0,5) comble les trous des formes. Il ferme les trous jusqu'à environ le double de la valeur : à 1,2 mm, un trou de 2 mm disparaît.
+
+**Fermeture à la main**, directement sur l'image :
+   1) Dans la zone **Style**, cliquez sur **Fermer une forme**.
+   1) Cliquez d'un côté du trou, puis de l'autre côté. Deux clics suffisent.
+   1) Un pont de la couleur de la forme est ajouté entre les deux points, et le motif est recalculé.
+   1) Si le pont est trop fin ou trop épais, réglez **Épaisseur de la fermeture manuelle** (0,4 à 3 mm) dans « Tous les réglages ».
+
+Le bouton **Effacer** retire les fermetures à la main (ainsi que la ligne guide, le point guide et les rails).
+
+=====43. Regrouper les couleurs pour limiter les sauts et les coupes de fil=====
+
+Chaque coupe de fil laisse un bout de fil à rattraper et rallonge la broderie. L'application réduit les coupes de trois façons, réglables dans « Simplification (moins de coupes) » :
+
+   * **Fusionner les fils proches** (0 à 30, défaut 8) : deux couleurs presque identiques reçoivent le même fil, donc la même aiguille. Montez la valeur pour avoir moins de changements de fil.
+   * **Optimiser l'ordre des zones** (Oui) : les morceaux d'une même couleur sont brodés du plus proche au plus proche, au lieu de sauter d'un bout à l'autre de l'image.
+   * **Liaison sans coupe dans une même couleur** (0 à 40 mm, défaut 20) : quand deux morceaux d'une même couleur sont reliés par un passage qui reste dans la zone de cette couleur, la machine y passe en brodant de petits points au lieu de couper.
+
+{{attach file="41-regroupement.png" desc="Avant et après le regroupement"}}
+
+Sur les trois photos d'essai, le nombre de coupes de fil passe de 2 638 à 332 (portrait), de 2 210 à 180 (chat) et de 1 741 à 184 (tasse), soit 87 à 92 % de coupes en moins.
+
+Les petits points de liaison sont posés dans la zone de la même couleur : sur une couleur très claire, ils peuvent se voir un peu. Baissez alors la distance de liaison. Pour une aiguille précise, **Couper le fil après chaque zone** (⚙ de l'aiguille) remet les coupes.
+
+=====44. Zoom et agrandissement de la photo=====
+
+Une barre de zoom se trouve juste au-dessus de la photo.
+
+{{attach file="35-zoom.png" desc="Zoom à 231 % sur la tasse : les détails des points apparaissent"}}
+
+   * **🔍+** et **🔍−** : zoom avant et arrière. La molette de la souris fait la même chose, autour de l'endroit pointé.
+   * Quand le zoom dépasse 100 %, **faites glisser** l'image avec la souris pour la déplacer.
+   * **Ajuster** : revient à la vue complète.
+   * **⛶** : affiche l'aperçu en plein écran.
+   * **⤢ Agrandir** : cache la colonne de gauche pour donner toute la place à l'image. **⤡ Réduire** la ramène.
+
+{{attach file="36-agrandir.png" desc="Mode Agrandir : l'image occupe toute la largeur"}}
+
+À fort zoom, l'aperçu est redessiné avec plus de finesse (jusqu'à trois fois plus de détails), pas seulement agrandi.
+
+=====45. Ne pas afficher une couleur=====
+
+À gauche de chaque ligne de la liste des fils se trouve une case à cocher.
+
+   1) **Décochez** la case d'une couleur : elle disparaît de l'aperçu (vue normale, relief et 3D).
+   1) **Recochez-la** pour la faire revenir.
+
+{{attach file="37-masquer-couleur.png" desc="Une couleur masquée : sa case est décochée"}}
+
+C'est pratique pour voir ce qu'il y a sous une couleur ou pour juger une couleur seule. La couleur masquée reste dans le fichier exporté : le masquage ne change que l'affichage.
+
+=====46. Plusieurs textes, plusieurs polices=====
+
+   1) Dans la zone **Textes sur l'image**, cliquez sur **Gérer les textes**. Un panneau s'ouvre à la place de la colonne de gauche.
+   1) Cliquez sur **➕ Ajouter un texte** autant de fois que nécessaire.
+   1) Pour chaque texte : tapez le texte, choisissez la **police**, réglez la **taille** et la **position** avec les curseurs, puis la **couleur du fil**.
+   1) Pour une autre police, cliquez sur **Importer une police** et choisissez un fichier "".ttf"", "".otf"" ou "".woff"" téléchargé sur votre ordinateur. Elle apparaît dans la liste de tous les textes.
+   1) **Fermer** ramène la colonne de gauche.
+
+{{attach file="38-textes-multiples.png" desc="Deux textes avec deux polices et deux types de point"}}
+
+Le type de point est choisi **automatiquement selon la taille** : l'application mesure l'épaisseur des traits de chaque texte et l'affiche sur sa carte.
+   * Trait de **moins de 1,2 mm** (petit texte) : point droit le long des lettres.
+   * Trait de **1,2 à 6 mm** : satin.
+   * Trait de **plus de 6 mm** (gros texte) : satin sur les parties fines et tatami sur les parties épaisses.
+
+Les points de l'image sont retirés sous les lettres, avec une petite marge : les fils ne se superposent pas. Chaque texte a sa ligne « texte » dans la liste des fils.
+
+=====47. Le sens du fichier DST : annuler l'effet miroir=====
+
+Si votre texte sort en miroir ou à l'envers, changez le réglage **Sens** de la zone **Exporter**. Il s'applique aux fichiers DST et 10O.
+
+{{attach file="40-sens-export.png" desc="Le réglage Sens dans la zone Exporter"}}
+
+Les quatre choix :
+   * **Retourné verticalement** (choix par défaut, réglé d'après la remarque d'un effet miroir) ;
+   * **Retourné horizontalement** ;
+   * **Tourné de 180°** ;
+   * **Sens d'origine**.
+
+Comment trouver le bon :
+   1) Écrivez une lettre qui ne se ressemble pas à l'envers, par exemple **F** ou **R**, avec **Texte seul**.
+   1) Exportez le DST, puis ouvrez-le dans votre logiciel de broderie.
+   1) Si la lettre est lisible dans le bon sens, c'est le bon choix. Sinon, changez **Sens**, exportez à nouveau et regardez encore. Essayez dans l'ordre : vertical, horizontal, 180°, origine.
+   1) Faites un essai sur une chute avant le vrai travail.
+
+=====48. Ce qui n'est pas encore disponible=====
 
    * Export EOF, palette Madeira intégrée (à importer vous-même).
+   * Le bon **Sens** d'export dépend de votre logiciel et de votre machine : il n'a pas pu être vérifié ici, d'où les quatre choix de la partie 47.
    * Réglages d'Ink/Stitch pas encore intégrés : arrêt de la machine après un objet (dépend de chaque machine) et lecture des polices de lettrage au format Ink/Stitch (remplacée par l'import de polices .ttf et .otf).
    * Le satin n'est pas encore soigné aux jonctions entre traits, et la reconnaissance d'écriture n'a pas pu être contrôlée avant livraison : elle dépend d'un chargement depuis internet.
    * Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
    * Le schéma de montage est un texte, pas encore un dessin.
 
-=====43. Journal des versions=====
+=====49. Journal des versions=====
 
+   * **Version 2.4** : fermeture des formes (automatique et à la main), regroupement des couleurs pour limiter sauts et coupes de fil (jusqu'à 92 % de coupes en moins sur les photos d'essai), zoom, molette, déplacement, plein écran et mode Agrandir, masquage d'une couleur, plusieurs textes avec polices importées et point choisi selon la taille, réglage du sens du fichier DST et 10O, conteneur Docker 2.4.
    * **Version 2.3** : barre de taille du motif au-dessus de la photo, conversion de meilleure qualité (calcul des couleurs en Lab, lissage de la photo, saturation, contraste automatique, angle automatique), plus de couleurs adaptées à l'image (6 à 15, jusqu'à 24 en réglage) et palette générique de 77 fils, boutons Ajouter ou Retirer une couleur, portrait en tons avec jusqu'à 4 couleurs et texte possible, liste des fils plus compacte, conteneur Docker 2.3.
    * **Version 2.2** : nouveau design plus vif et plus convivial (couleurs, icônes, bulles d'aide, glisser-déposer, thème sombre), panneaux de réglages qui remplacent la colonne de gauche sans rien cacher, correction du panneau Réglages rapides et du panneau Tous les réglages (leurs curseurs ne réagissaient pas), conteneur Docker 2.2.
    * **Version 2.1** : import de polices "".ttf"" et "".otf"", colonnes de satin à rails, remplissage guidé par une ligne, sous-couche en zigzag du tatami, optimisation automatique des réglages à chaque changement de style, réglages satin et coupe de fil, point guide des cercles, interface compactée pour tout voir sans défiler, conteneur Docker durci.
