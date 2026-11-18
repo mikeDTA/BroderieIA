@@ -1,4 +1,4 @@
-# BroderieIA - Atelier Broderie v2.5.1
+# BroderieIA - Atelier Broderie v2.6
 # (c) Michaël PONCET (https://github.com/mikeDTA) - CC BY-NC 4.0
 
 # Étape 1 : téléchargement facultatif de l'IA de détourage (modèle + ONNX Runtime Web)
@@ -11,7 +11,7 @@ RUN mkdir -p /out/models /out/vendor/ort && \
 
 # Étape 2 : serveur web
 FROM nginx:stable-alpine
-ARG APP_VERSION=2.5.1
+ARG APP_VERSION=2.6
 LABEL org.opencontainers.image.title="BroderieIA - Atelier Broderie" \
       org.opencontainers.image.authors="Michaël PONCET (https://github.com/mikeDTA)" \
       org.opencontainers.image.licenses="CC-BY-NC-4.0" \

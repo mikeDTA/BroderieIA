@@ -1,4 +1,4 @@
-# Atelier Broderie v2.4 (dépôt broderieIA)
+# Atelier Broderie v2.6 (dépôt broderieIA)
 
 Auteur : Michaël PONCET, https://github.com/mikeDTA
 
@@ -24,7 +24,16 @@ Aussi : import de polices .ttf/.otf, colonnes de satin à rails dessinées à la
 Aussi : design plus vif (icônes, thème sombre, glisser-déposer, bulles d'aide), panneaux de réglages qui ne cachent plus le motif.
 Aussi : barre de taille du motif, conversion de meilleure qualité (Lab, lissage, saturation, angle automatique), palette de 77 fils, plus de couleurs (6 à 15, jusqu'à 24), portrait en tons jusqu'à 4 couleurs avec texte.
 Aussi (v2.4) : fermeture des formes, regroupement des couleurs (jusqu'à 92 % de coupes en moins), zoom et mode agrandir, masquage d'une couleur, plusieurs textes avec polices importées, sens d'export DST/10O réglable.
+Aussi (v2.5) : pinceau, gomme et annulation pour corriger les zones sur la photo, détourage par IA open source (U²-Netp, dans le navigateur), conteneur Docker 2.5.
+Aussi (v2.6) : le détourage par IA se lance tout seul à l'import d'une photo (case « auto à l'import »), avec repli silencieux si l'IA n'est pas installée.
 À venir : export EOF (format Embird Studio non documenté), satin plus soigné aux jonctions, réglages Ink/Stitch restants (zigzag, sous-couches de contour, méthodes de remplissage).
 
 ## Déploiement avec Docker
 `docker compose up -d --build` puis ouvrir http://localhost:8080 (voir le guide, partie 26).
+
+## IA de détourage (facultative)
+Pour retirer automatiquement le fond d'une photo, installez le modèle U²-Netp (Apache-2.0) et ONNX Runtime Web (MIT) :
+
+    sh scripts/download-ai.sh
+
+Avec Docker, `docker compose up -d --build` le fait seul (mettre `WITH_AI: "0"` pour l'éviter). Sur GitHub Pages, lancez le script puis envoyez les dossiers `models` et `vendor` dans le dépôt. Détails : guide, partie 49. Licences : `THIRD_PARTY.md`.

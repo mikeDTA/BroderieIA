@@ -3,9 +3,9 @@ services:
     build:
       context: .
       args:
-        APP_VERSION: "2.5.1"
+        APP_VERSION: "2.6"
         WITH_AI: "1"
-    image: broderieia:2.5.1
+    image: broderieia:2.6
     container_name: broderieia
     ports:
       - "8080:80"
