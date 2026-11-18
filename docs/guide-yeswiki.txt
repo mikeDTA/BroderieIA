@@ -52,8 +52,10 @@ Ce guide s'adresse à des personnes qui n'ont aucune habitude de l'informatique.
    * 45. Ne pas afficher une couleur
    * 46. Plusieurs textes, plusieurs polices
    * 47. Le sens du fichier DST : annuler l'effet miroir
-   * 48. Ce qui n'est pas encore disponible
-   * 49. Journal des versions
+   * 48. Corriger les zones directement sur la photo
+   * 49. Le détourage par IA open source
+   * 50. Ce qui n'est pas encore disponible
+   * 51. Journal des versions
 
 =====1. Avant de commencer=====
 
@@ -91,7 +93,7 @@ Les utilisateurs de Git peuvent aussi taper ""git clone https://github.com/mikeD
 
 ====Déposer les fichiers et les dossiers====
    1) Sur la page du dépôt vide, cliquez sur le lien **uploading an existing file** (ou **Add file** puis **Upload files**).
-   1) Ouvrez le dossier du projet sur votre ordinateur et sélectionnez tout son contenu : ""index.html"", ""README.md"", ""LICENSE"" et le dossier ""docs"".
+   1) Ouvrez le dossier du projet sur votre ordinateur et sélectionnez tout son contenu : ""index.html"", ""README.md"", ""LICENSE"", ""THIRD_PARTY.md"", ""Dockerfile"", ""docker-compose.yml"", ""nginx.conf"" et les dossiers ""docs"", ""scripts"" et ""models"". Si vous avez téléchargé l'IA de détourage (partie 49), ajoutez aussi le dossier ""vendor"".
    1) Faites glisser cette sélection dans la zone de la page GitHub. Les dossiers gardent leur contenu.
    1) Attendez la fin du chargement, puis tapez dans la case en bas un message, par exemple « Première version ».
    1) Cliquez sur le bouton vert **Commit changes**.
@@ -411,14 +413,21 @@ ls
 La liste doit contenir ""Dockerfile"", ""docker-compose.yml"", ""nginx.conf"", ""index.html"" et ""docs"". Sans Git, téléchargez le ZIP depuis GitHub (partie 2), décompressez-le et placez-vous dans le dossier avec la commande ""cd"".
 
 ====Étape 4 : les fichiers Docker (déjà dans le projet)====
-**Dockerfile** (version 2.4) : décrit la boîte (nginx, les fichiers de l'application, un contrôle de santé automatique).
+**Dockerfile** (version 2.6) : décrit la boîte en deux étapes. La première télécharge l'IA de détourage (facultative), la seconde installe le serveur web nginx avec l'application et un contrôle de santé automatique.
 
 %%
+FROM alpine:3.20 AS ai
+ARG WITH_AI=1
+RUN apk add --no-cache curl
+COPY scripts/download-ai.sh /ai/download-ai.sh
+RUN mkdir -p /out/models /out/vendor/ort && \
+    if [ "$WITH_AI" = "1" ]; then \
+      sh /ai/download-ai.sh /out || echo "IA non telechargee"; fi
+
 FROM nginx:stable-alpine
-ARG APP_VERSION=2.4
-LABEL org.opencontainers.image.title="BroderieIA - Atelier Broderie" \
-      org.opencontainers.image.version="${APP_VERSION}"
+ARG APP_VERSION=2.6
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=ai /out/ /usr/share/nginx/html/
 COPY index.html /usr/share/nginx/html/index.html
 COPY docs /usr/share/nginx/html/docs
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
@@ -426,7 +435,9 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
 EXPOSE 80
 %%
 
-**docker-compose.yml** : donne le nom de la boîte (""broderieia""), sa version (2.4), son port (8080), une protection contre les élévations de droits et le redémarrage automatique.
+Si la construction n'a pas accès à internet, l'étape IA échoue sans bloquer : l'application fonctionne, seul le détourage par IA est absent.
+
+**docker-compose.yml** : donne le nom de la boîte (""broderieia""), sa version (2.6), son port (8080), le choix d'installer l'IA (""WITH_AI"", mettez """0""" pour ne pas la télécharger), une protection contre les élévations de droits et le redémarrage automatique.
 
 %%
 services:
@@ -434,8 +445,9 @@ services:
     build:
       context: .
       args:
-        APP_VERSION: "2.4"
-    image: broderieia:2.4
+        APP_VERSION: "2.6"
+        WITH_AI: "1"
+    image: broderieia:2.6
     container_name: broderieia
     ports:
       - "8080:80"
@@ -444,7 +456,7 @@ services:
     restart: unless-stopped
 %%
 
-**nginx.conf** : réglages du serveur web (compression, en-têtes de sécurité, version du serveur masquée, page principale toujours rechargée, images du guide mises en cache une semaine).
+**nginx.conf** : réglages du serveur web (compression, en-têtes de sécurité, version du serveur masquée, page principale toujours rechargée, images du guide, modèle d'IA et fichiers "".wasm"" mis en cache).
 
 %%
 server {
@@ -454,9 +466,12 @@ server {
     root /usr/share/nginx/html;
     index index.html;
     gzip on;
-    add_header X-Frame-Options SAMEORIGIN;
     location = /index.html {
         add_header Cache-Control "no-cache";
+    }
+    location ~* \.wasm$ {
+        default_type application/wasm;
+        expires 30d;
     }
     location / { try_files $uri $uri/ =404; }
 }
@@ -472,12 +487,12 @@ docker ps
 La deuxième commande doit afficher une ligne ""broderieia"" avec l'état « Up ». Après une trentaine de secondes, l'état devient « Up (healthy) » : le contrôle de santé confirme que le serveur répond. Ouvrez Firefox et allez sur ""http://localhost:8080"" : l'application apparaît, comme sur la capture de la partie 4.
 
 ====Étape 6 : l'ouvrir depuis un autre ordinateur====
-   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.468.1.20"") est celle du serveur.
-   1) Sur l'autre ordinateur, allez sur ""http://192.468.1.20:8080"".
+   1) Sur le serveur, tapez ""hostname -I"" : la première adresse (par exemple ""192.668.1.20"") est celle du serveur.
+   1) Sur l'autre ordinateur, allez sur ""http://192.668.1.20:8080"".
    1) Si la page ne s'ouvre pas, autorisez le port : ""sudo ufw allow 8080/tcp"" (le pare-feu est inactif par défaut sous Kubuntu : ""sudo ufw status"" le dit).
 
 ====Étape 7 : gérer le service====
-   * Voir la version installée : ""docker images"" (la ligne ""broderieia"" doit afficher ""2.4"").
+   * Voir la version installée : ""docker images"" (la ligne ""broderieia"" doit afficher ""2.6"").
    * Voir les messages : ""docker compose logs -f"" (Ctrl + C pour quitter).
    * Arrêter : ""docker compose down"".
    * Mettre à jour le conteneur après un changement sur GitHub :
@@ -676,6 +691,7 @@ L'interface est colorée pour que chaque zone se reconnaisse d'un coup d'œil. C
    * 👁️ **Affichage** : relief, vue 3D, lumière, inclinaison.
    * 💾 **Exporter** : DST (bouton orange), 10O et EDR.
    * 📐 **Montage sur cadre et aiguille** et 🪡 **Fils**, à droite de la colonne de gauche.
+   * ✏️ **Corriger** et 🤖 **IA** : une deuxième barre sous la barre de zoom (parties 48 et 49).
 
 {{attach file="01-accueil.png" desc="Écran d'accueil : glissez une image dans le cadre en pointillés"}}
 
@@ -832,9 +848,9 @@ Si votre texte sort en miroir ou à l'envers, changez le réglage **Sens** de la
 {{attach file="40-sens-export.png" desc="Le réglage Sens dans la zone Exporter"}}
 
 Les quatre choix :
-   * **Retourné verticalement** (choix par défaut, réglé d'après la remarque d'un effet miroir) ;
-   * **Retourné horizontalement** ;
-   * **Tourné de 180°** ;
+   * **Miroir vertical** (choix par défaut, réglé d'après la remarque d'un effet miroir) ;
+   * **Miroir horizontal** ;
+   * **Rotation 180°** ;
    * **Sens d'origine**.
 
 Comment trouver le bon :
@@ -843,17 +859,81 @@ Comment trouver le bon :
    1) Si la lettre est lisible dans le bon sens, c'est le bon choix. Sinon, changez **Sens**, exportez à nouveau et regardez encore. Essayez dans l'ordre : vertical, horizontal, 180°, origine.
    1) Faites un essai sur une chute avant le vrai travail.
 
-=====48. Ce qui n'est pas encore disponible=====
+=====48. Corriger les zones directement sur la photo=====
+
+Le motif est calculé automatiquement, mais une zone peut être mal découpée : un reflet pris pour une couleur, un bout de forme manquant, une tache en trop. Une barre de correction, sous la barre de zoom, permet de retoucher à la main.
+
+{{attach file="43-barre-corrections.png" desc="Barre de correction : pinceau actif, couleur choisie à côté du curseur de taille"}}
+
+   1) **Choisissez la couleur** : cliquez sur une zone de l'image, ou sur une ligne de la liste des fils. La pastille ronde de la barre prend cette couleur.
+   1) **Pinceau** : cliquez sur **🖌 Pinceau** (le bouton devient orange). Si aucune couleur n'est choisie, cliquez sur une zone de l'image pour la prendre. Puis **glissez** sur l'image : un trait orange transparent montre votre passage. Quand vous relâchez, la zone prend la couleur choisie et le motif est recalculé.
+   1) **Taille** : le curseur **Taille** règle l'épaisseur du pinceau, de 1 à 20 mm.
+   1) **Gomme** : cliquez sur **🧽 Gomme**, puis glissez sur les zones à retirer : la broderie disparaît et le tissu réapparaît. La case **Ignorer le fond** doit être cochée.
+   1) **Annuler** : **↩ Annuler** retire la dernière correction.
+   1) **Terminer** : cliquez de nouveau sur Pinceau ou Gomme pour le désactiver. Vous pouvez alors zoomer, déplacer l'image et cliquer pour choisir une couleur.
+
+{{attach file="42-corrections-avant-apres.png" desc="Avant : l'image convertie. Après : du rouge ajouté en haut et une zone effacée dans le cercle"}}
+
+Le bouton **Effacer** (zone **Style**) supprime toutes les corrections et tous les tracés. Les corrections sont conservées quand vous changez les réglages, et elles disparaissent quand vous importez une autre image. Elles ne s'appliquent pas en mode Portrait. Pour fermer un petit trou dans une forme, utilisez plutôt **Fermer une forme** (partie 42).
+
+=====49. Le détourage par IA open source=====
+
+**Une IA améliore-t-elle la conversion ?** Oui pour les photos qui ont un sujet net (un portrait, un animal, un objet) : une IA de détourage sépare le sujet du fond bien mieux qu'une simple règle de couleurs. On obtient moins de zones inutiles, moins de couleurs gaspillées sur l'arrière-plan et moins de coupes de fil. Pour un logo ou un dessin sur fond uni, elle n'apporte presque rien. Je n'ai pas pu mesurer le gain avec le vrai modèle, qui n'était pas téléchargeable depuis l'environnement où l'application a été écrite : comparez avec et sans sur quelques-unes de vos photos.
+
+L'IA utilisée est **U²-Netp** (licence Apache-2.0), exécutée dans votre navigateur, sur le processeur, avec **ONNX Runtime Web** (licence MIT). Aucune image n'est envoyée sur internet.
+
+{{attach file="45-schema-ia.png" desc="Le trajet d'une photo : IA, masque, broderie"}}
+
+====Installer l'IA====
+Le modèle (environ 4,7 Mo) et la bibliothèque ne sont pas dans le projet : un script les télécharge.
+   * **Avec Docker** : rien à faire. ""docker compose up -d --build"" télécharge l'IA pendant la construction (internet est nécessaire à ce moment). Pour ne pas l'installer, mettez ""WITH_AI: "0""" dans ""docker-compose.yml"".
+   * **Sans Docker, sous Kubuntu** : ouvrez Konsole et tapez ces deux commandes.
+
+%%
+cd ~/broderieIA
+sh scripts/download-ai.sh
+%%
+
+Le script crée le fichier ""models/u2netp.onnx"" et le dossier ""vendor/ort"". Il vérifie le fichier avec une somme de contrôle et vous prévient si elle est différente.
+   * **Avec GitHub Pages** : lancez le script sur votre ordinateur, puis téléversez les dossiers ""models"" et ""vendor"" sur GitHub (**Add file**, **Upload files**, environ 40 Mo en tout).
+
+====Utiliser l'IA : automatique à chaque photo====
+Depuis la version 2.6, l'IA se lance **toute seule** quand vous importez une photo.
+   1) Importez une photo. La conversion normale s'affiche tout de suite.
+   1) L'IA analyse ensuite la photo. La ligne sous la barre de correction indique « IA : analyse automatique de la photo… ». La toute première fois, comptez quelques secondes de plus : le modèle se charge.
+   1) Le message « sujet détecté, fond retiré automatiquement » apparaît, la case **sujet seul** se coche et le motif est recalculé sans le fond. Il est plus précis, car les points et les couleurs ne sont plus répartis sur l'arrière-plan.
+   1) Pour comparer, décochez **sujet seul**.
+   1) La case **auto à l'import** commande ce comportement. Décochez-la pour un logo ou un dessin sur fond uni, où l'IA n'apporte presque rien. Votre choix est mémorisé dans le navigateur. Le bouton **🤖 Détourer** reste disponible pour lancer l'IA à la main.
+   1) Si l'IA n'est pas installée, un court message l'indique et la conversion continue sans elle. L'application n'insiste pas à chaque photo : cliquez sur **Détourer** pour réessayer, ou cochez de nouveau **auto à l'import**.
+   1) Si aucun sujet net n'est trouvé, la photo est gardée entière.
+   1) Réglez **Seuil du détourage IA (%)** dans « Tous les réglages » (famille **Qualité de la photo**) : plus la valeur est haute, plus le sujet est strict.
+   1) **Modèle…** permet de charger un autre fichier "".onnx"" de détourage de type U²-Net (entrée de 320 × 320 points, sortie en carte de saillance).
+
+{{attach file="44-barre-ia.png" desc="La barre de correction et d'IA, avec un message d'aide"}}
+
+====Si un message d'erreur apparaît====
+   * **« bibliothèque ONNX Runtime introuvable »** : pas d'internet et dossier ""vendor/ort"" absent. Lancez ""sh scripts/download-ai.sh"".
+   * **« modèle introuvable »** : le fichier ""models/u2netp.onnx"" manque. Lancez le même script ou utilisez **Modèle…**.
+   * **« échec de l'analyse »** : le navigateur est trop ancien ou le modèle n'est pas compatible. Essayez un autre navigateur.
+   * **« using ceil() in shape computation is not yet supported for MaxPool »** : ce message venait du calcul sur la carte graphique (WebGL), que ce modèle ne sait pas faire. Depuis la version 2.5.1, l'IA s'exécute sur le processeur (WebAssembly) : remplacez ""index.html"" par la nouvelle version. Compter une à trois secondes par photo.
+
+D'autres IA existent (découpage par objets, détection de contours, agrandissement d'image) : elles ne sont pas intégrées, car leurs modèles sont souvent beaucoup plus lourds.
+
+=====50. Ce qui n'est pas encore disponible=====
 
    * Export EOF, palette Madeira intégrée (à importer vous-même).
+   * Le **détourage par IA** n'a pas pu être essayé avec le vrai modèle : seule sa liaison avec l'application a été vérifiée (messages d'erreur, préparation de l'image, utilisation du masque).
    * Le bon **Sens** d'export dépend de votre logiciel et de votre machine : il n'a pas pu être vérifié ici, d'où les quatre choix de la partie 47.
    * Réglages d'Ink/Stitch pas encore intégrés : arrêt de la machine après un objet (dépend de chaque machine) et lecture des polices de lettrage au format Ink/Stitch (remplacée par l'import de polices .ttf et .otf).
    * Le satin n'est pas encore soigné aux jonctions entre traits, et la reconnaissance d'écriture n'a pas pu être contrôlée avant livraison : elle dépend d'un chargement depuis internet.
    * Parmi les nombreux réglages d'Ink/Stitch, seuls ceux de ce guide sont reliés : le zigzag, les sous-couches de contour, les points de remplissage en spirale ou à motif, et le réglage de départ et d'arrivée ne le sont pas encore.
    * Le schéma de montage est un texte, pas encore un dessin.
 
-=====49. Journal des versions=====
+=====51. Journal des versions=====
 
+   * **Version 2.6** : le détourage par IA se lance automatiquement à l'import d'une photo (case « auto à l'import », mémorisée), avec repli sans blocage si l'IA n'est pas installée et gestion des photos sans sujet net, conteneur Docker 2.6.
+   * **Version 2.5.1** : correction du détourage par IA (exécution sur le processeur au lieu de la carte graphique, qui provoquait l'erreur MaxPool), conteneur Docker 2.5.1.
+   * **Version 2.5** : pinceau, gomme et annulation pour corriger les zones sur la photo, détourage par IA open source (U²-Netp avec ONNX Runtime Web), script de téléchargement et étape Docker pour l'installer, barre de correction et d'IA, noms du sens d'export clarifiés, conteneur Docker 2.5 en deux étapes.
    * **Version 2.4** : fermeture des formes (automatique et à la main), regroupement des couleurs pour limiter sauts et coupes de fil (jusqu'à 92 % de coupes en moins sur les photos d'essai), zoom, molette, déplacement, plein écran et mode Agrandir, masquage d'une couleur, plusieurs textes avec polices importées et point choisi selon la taille, réglage du sens du fichier DST et 10O, conteneur Docker 2.4.
    * **Version 2.3** : barre de taille du motif au-dessus de la photo, conversion de meilleure qualité (calcul des couleurs en Lab, lissage de la photo, saturation, contraste automatique, angle automatique), plus de couleurs adaptées à l'image (6 à 15, jusqu'à 24 en réglage) et palette générique de 77 fils, boutons Ajouter ou Retirer une couleur, portrait en tons avec jusqu'à 4 couleurs et texte possible, liste des fils plus compacte, conteneur Docker 2.3.
    * **Version 2.2** : nouveau design plus vif et plus convivial (couleurs, icônes, bulles d'aide, glisser-déposer, thème sombre), panneaux de réglages qui remplacent la colonne de gauche sans rien cacher, correction du panneau Réglages rapides et du panneau Tous les réglages (leurs curseurs ne réagissaient pas), conteneur Docker 2.2.
